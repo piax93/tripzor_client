@@ -1,6 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Tripzor</string>
 
+    <string name="app_name">Tripzor</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_trip_list">Trip List</string>
+    <string name="title_activity_register">Register</string>
+    <string name="title_activity_password_recovery">Password Recovery</string>
+    <string name="title_activity_password_change">PasswordChange</string>
+	<string name="password_change">Change Password</string>
+	<string name="new_password">New Password</string>
+	<string name="confirm">Confirm</string>
+	<string name="logout">LogOut</string>
+    
 </resources>
