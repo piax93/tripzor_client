@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Tripzor/Tripzor.iml" filepath="$PROJECT_DIR$/Tripzor/Tripzor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tripzor.iml" filepath="$PROJECT_DIR$/tripzor.iml" />
+    </modules>
+  </component>
+</project>
