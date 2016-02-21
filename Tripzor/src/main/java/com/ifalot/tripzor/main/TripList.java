@@ -1,8 +1,13 @@
 package com.ifalot.tripzor.main;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.support.design.widget.FloatingActionButton;
+import android.view.View;
+import android.widget.AdapterView;
+import com.ifalot.tripzor.model.Trip;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.Codes;
@@ -28,6 +33,15 @@ public class TripList extends AppCompatActivity implements ResultListener {
 		HashMap<String, String> data = new HashMap<String, String>();
 		data.put("action", "ListTrips");
 		PostSender.sendPostML(data, this);
+
+		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.button_add_trip);
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Intent intent = new Intent(TripList.this, AddTrip.class);
+				startActivity(intent);
+			}
+		});
 		
 	}
 
@@ -71,11 +85,38 @@ public class TripList extends AppCompatActivity implements ResultListener {
 			ListView lv = (ListView) findViewById(R.id.trip_list);
 			if(listResult.size() == 0) {
 				listResult.add("No trips linked to your account");
+				lv.setAdapter(new ArrayAdapter<String>(this,
+						android.R.layout.simple_list_item_1, listResult));
 			}else{
-				
+				ArrayList<Trip> trips = parseTrips(listResult);
+				lv.setAdapter(new ArrayAdapter<Trip>(this,
+						android.R.layout.simple_list_item_1, trips));
+				lv.setOnItemClickListener(getListAction(trips));
 			}
-			lv.setAdapter(new ArrayAdapter<String>(this, 
-					android.R.layout.simple_list_item_1, listResult));
+
 		}
+	}
+
+	private ArrayList<Trip> parseTrips(List<String> listResult) {
+		ArrayList<Trip> trips = new ArrayList<Trip>();
+		for(String line : listResult){
+			boolean owned = false;
+			if(line.startsWith("*")){
+				owned = true;
+				line = line.substring(1);
+			}
+			String[] tmp = line.split(":", 2);
+			trips.add(new Trip(Integer.parseInt(tmp[0]), owned, tmp[1]));
+		}
+		return trips;
+	}
+
+	private AdapterView.OnItemClickListener getListAction(ArrayList<Trip> trips){
+		return new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+			}
+		};
 	}
 }

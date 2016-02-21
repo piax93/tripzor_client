@@ -11,6 +11,7 @@
 	<string name="password_change">Change Password</string>
 	<string name="new_password">New Password</string>
 	<string name="confirm">Confirm</string>
-	<string name="logout">LogOut</string>
+	<string name="logout">Log Out</string>
+    <string name="title_activity_add_trip">New Trip</string>
     
 </resources>
