@@ -37,7 +37,6 @@
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
 	            android:hint="@string/prompt_password"
-	            android:imeActionId="@+id/login"
 	            android:imeActionLabel="@string/action_sign_in_short"
 	            android:imeOptions="actionUnspecified"
 	            android:inputType="textPassword"
@@ -61,16 +60,18 @@
 	            android:layout_marginTop="-5dp"
 	            android:text="@string/action_register"
 	            android:textStyle="bold" />
-	        
-	        <Button
-	            android:id="@+id/forgot_password_button"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_gravity="center_horizontal"
-	            android:text="@string/forgot_passowrd" 
-	            android:background="#FFF"/>
-	    
-	    </LinearLayout>
+
+			<TextView
+				android:id="@+id/forgot_password_button"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="10dp"
+				android:layout_gravity="center_horizontal"
+				android:text="@string/forgot_password"
+				android:textStyle="bold"
+				android:background="@android:color/transparent"/>
+
+		</LinearLayout>
 
 	        <ProgressBar
 	            android:id="@+id/loginProgress"

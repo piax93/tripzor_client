@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.support.v7.widget.AppCompatButton;
 
+import android.widget.TextView;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.Codes;
@@ -18,7 +19,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 
 public class Login extends AppCompatActivity implements ResultListener{
@@ -45,7 +45,7 @@ public class Login extends AppCompatActivity implements ResultListener{
 			final EditText passwordEditText = (EditText) findViewById(R.id.password);
 			AppCompatButton loginButton = (AppCompatButton) findViewById(R.id.email_sign_in_button);
 			AppCompatButton registerButton = (AppCompatButton) findViewById(R.id.register_button);
-			Button forgotPassword = (Button) findViewById(R.id.forgot_password_button);
+			TextView forgotPassword = (TextView) findViewById(R.id.forgot_password_button);
 			
 			loginButton.setOnClickListener(new OnClickListener() {			
 				@Override
