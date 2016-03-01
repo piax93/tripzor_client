@@ -61,7 +61,7 @@ public class DataManager {
 	
 	@SuppressWarnings("finally")
 	public static String selectData(String key){
-		String result = Codes.EMPTY; Cursor c;
+		String result = Codes.EMPTY; Cursor c = null;
 		String sql = "SELECT value FROM " + tableName + " WHERE key = '" + key + "'";
 		try {
 			if(database != null){
@@ -71,6 +71,7 @@ public class DataManager {
 				c.close();
 			}
 		} finally {
+			if(c != null && !c.isClosed()) c.close();
 			return result;
 		}
 	}

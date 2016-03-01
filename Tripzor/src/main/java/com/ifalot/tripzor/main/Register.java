@@ -3,6 +3,7 @@ package com.ifalot.tripzor.main;
 import java.util.HashMap;
 import java.util.List;
 
+import android.widget.Button;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.Codes;
@@ -14,7 +15,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatButton;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
@@ -34,7 +34,7 @@ public class Register extends AppCompatActivity implements ResultListener {
 		((EditText) layout.getChildAt(0)).setText(intent.getStringExtra("email"));
 		((EditText) layout.getChildAt(1)).setText(intent.getStringExtra("password"));
 		
-		AppCompatButton b = (AppCompatButton) findViewById(R.id.register_button);
+		Button b = (Button) findViewById(R.id.register_button);
 		b.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
