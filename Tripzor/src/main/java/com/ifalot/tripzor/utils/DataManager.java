@@ -7,18 +7,23 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-@SuppressWarnings("Duplicates")
+@SuppressWarnings({"Duplicates"})
 public class DataManager {
 	
 	private static final String databaseName = "TripzorData";
 	private static final String tableName = "data";
-	private static SQLiteDatabase database;
+	private static Context context;
+
+	private static SQLiteDatabase getDB(){
+		return context.openOrCreateDatabase(databaseName, Context.MODE_PRIVATE, null);
+	}
 	
 	public static void init(Context c){
-		database = c.openOrCreateDatabase(databaseName, 
-				Context.MODE_PRIVATE, null);
+		context = c;
+		SQLiteDatabase database = getDB();
 		database.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + 
 				" (key VARCHAR(255) PRIMARY KEY, value VARCHAR(255) )");
+		database.close();
 	}
 	
 	public static boolean isPresent(String key){
@@ -26,54 +31,73 @@ public class DataManager {
 	}
 	
 	public static boolean insertData(String key, String value){
+		boolean stat = true;
+		SQLiteDatabase database = null;
 		try	{
 			if(!isPresent(key)){
 				String sql = "INSERT INTO " + tableName + " VALUES('" + key + "','" + value + "')";
-				if(database != null) database.execSQL(sql);
-				return true;
+				database = getDB();
+				database.execSQL(sql);
+				stat = true;
 			}else{
-				return updateValue(key, value);
+				stat = updateValue(key, value);
 			}
 		} catch (SQLException e){
-			return false;
+			stat = false;
+		} finally {
+			if(database != null) database.close();
 		}
+		return stat;
 	}
 	
 	public static boolean updateValue(String key, String newValue){
-		String sql = "UPDATE TABLE " + tableName + "SET value = '" + newValue + "' WHERE key = '" + key + "'";
+		String sql = "UPDATE " + tableName + " SET value = '" + newValue + "' WHERE key = '" + key + "'";
+		SQLiteDatabase database = null;
+		boolean stat = true;
 		try{
-			if(database != null) database.execSQL(sql);
-			return true;
-		}catch(SQLException e){
-			return false;
+			database = getDB();
+			database.execSQL(sql);
+		} catch(SQLException e){
+			stat = false;
+		} finally {
+			if(database != null) database.close();
 		}
+		return stat;
 	}
 	
 	public static boolean deleteData(String key){
 		String sql = "DELETE FROM " + tableName + " WHERE key = '" + key + "'";
+		SQLiteDatabase database = null;
+		boolean stat = true;
 		try{
-			if(database != null) database.execSQL(sql);
-			return true;
+			database = getDB();
+			database.execSQL(sql);
 		}catch(SQLException e){
-			return false;
+			stat = false;
+		}finally {
+			if(database != null) database.close();
 		}
+		return stat;
 	}
 	
 	@SuppressWarnings("finally")
 	public static String selectData(String key){
-		String result = Codes.EMPTY; Cursor c = null;
+		String result = Codes.EMPTY;
+		Cursor c = null;
 		String sql = "SELECT value FROM " + tableName + " WHERE key = '" + key + "'";
+		SQLiteDatabase database = null;
 		try {
-			if(database != null){
-				c = database.rawQuery(sql, null);
-				c.moveToFirst();
-				result = c.getString(0);
-				c.close();
-			}
+			database = getDB();
+			c = database.rawQuery(sql, null);
+			if(c.moveToFirst()) result = c.getString(0);
+			c.close();
+		} catch(Exception e){
+			result = Codes.EMPTY;
 		} finally {
 			if(c != null && !c.isClosed()) c.close();
-			return result;
+			if(database != null) database.close();
 		}
+		return result;
 	}
 
 }

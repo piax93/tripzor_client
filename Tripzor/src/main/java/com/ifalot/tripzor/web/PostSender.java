@@ -39,9 +39,9 @@ import java.util.Map.Entry;
 @SuppressWarnings("deprecation")
 public class PostSender extends AsyncTask<HashMap<String, String>, String, String> {
 	
-	// public static final String URL_STRING = "http://piax.altervista.org/tripzor/index.php";
-	public static final String URL_STRING = "https://tripzor.azurewebsites.net";
-	// protected static PostSender sender;
+	public static final String URL_STRING = "http://10.0.2.2:80/tripzor/";
+	// public static final String URL_STRING = "https://tripzor.azurewebsites.net";
+
 	protected static HttpContext localContext;
 	protected static CookieStore cookieStore;
 	

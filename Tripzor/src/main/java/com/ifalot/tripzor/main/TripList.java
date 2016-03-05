@@ -46,6 +46,20 @@ public class TripList extends AppCompatActivity implements ResultListener {
 	}
 
 	@Override
+	protected void onRestart() {
+		super.onRestart();
+		String newtrip = DataManager.selectData("new_trip");
+		if(newtrip.equals("true")){
+			DataManager.insertData("new_trip", "false");
+			HashMap<String, String> data = new HashMap<String, String>();
+			data.put("action", "ListTrips");
+			PostSender.sendPostML(data, this);
+		}
+
+
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.trip_list, menu);
 		return true;

@@ -24,58 +24,52 @@
 	            android:singleLine="true" />
 
 		<EditText
-		    android:id="@+id/password"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:hint="@string/prompt_password"
-		    android:imeActionId="@+id/login"
-		    android:imeActionLabel="@string/action_sign_in_short"
-		    android:imeOptions="actionUnspecified"
-		    android:inputType="textPassword"
-		    android:maxLines="1"
-		    android:singleLine="true" />
+				android:id="@+id/password"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/prompt_password"
+				android:inputType="textPassword"
+				android:maxLines="1"
+				android:singleLine="true" />
 		
 		<EditText
-		    android:id="@+id/password_retype"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:hint="@string/prompt_password_again"
-		    android:imeActionId="@+id/login"
-		    android:imeActionLabel="@string/action_sign_in_short"
-		    android:imeOptions="actionUnspecified"
-		    android:inputType="textPassword"
-		    android:maxLines="1"
-		    android:singleLine="true" />
+				android:id="@+id/password_retype"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/prompt_password_again"
+				android:inputType="textPassword"
+				android:maxLines="1"
+				android:singleLine="true" />
         
 		<EditText
-	    	android:id="@+id/name"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/prompt_name"
-			android:inputType="textPersonName"
-			android:maxLines="1"
-			android:singleLine="true" />
+				android:id="@+id/name"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/prompt_name"
+				android:inputType="textPersonName"
+				android:maxLines="1"
+				android:singleLine="true" />
 		
 		<EditText
-	    	android:id="@+id/surname"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/prompt_surname"
-			android:inputType="textPersonName"
-			android:maxLines="1"
-			android:singleLine="true" />
+				android:id="@+id/surname"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/prompt_surname"
+				android:inputType="textPersonName"
+				android:maxLines="1"
+				android:singleLine="true" />
 
 		<EditText
-	    	android:id="@+id/phone_number"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/prompt_phone"
-			android:inputType="phone"
-			android:maxLines="1"
-			android:singleLine="true" />		
-		
+				android:id="@+id/phone_number"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/prompt_phone"
+				android:inputType="phone"
+				android:maxLines="1"
+				android:singleLine="true" />
+
 		<Button
-	            android:id="@+id/register_button"
+				android:id="@+id/register_button"
 	            android:layout_width="190dp"
 	            android:layout_height="50dp"
 	            android:layout_gravity="center_horizontal"
