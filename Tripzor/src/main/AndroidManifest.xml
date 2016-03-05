@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ifalot.tripzor.main" >
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.ifalot.tripzor.main">
 
+    <uses-sdk tools:overrideLibrary="me.zhanghai.android.materialprogressbar" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />

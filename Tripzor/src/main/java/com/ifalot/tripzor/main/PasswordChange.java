@@ -1,25 +1,24 @@
 package com.ifalot.tripzor.main;
 
-import java.util.HashMap;
-import java.util.List;
-
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
 
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatButton;
-import android.app.ProgressDialog;
-import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.EditText;
+import java.util.HashMap;
+import java.util.List;
 
 public class PasswordChange extends AppCompatActivity implements ResultListener{
 
-	protected ProgressDialog progressDialog;
+	protected MaterialDialog progressDialog;
 	protected String password;
 	
 	@Override
@@ -27,7 +26,7 @@ public class PasswordChange extends AppCompatActivity implements ResultListener{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_password_change);
 		
-		AppCompatButton confirm = (AppCompatButton) findViewById(R.id.confirm_password);
+		Button confirm = (Button) findViewById(R.id.confirm_password);
 		confirm.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -39,7 +38,7 @@ public class PasswordChange extends AppCompatActivity implements ResultListener{
 					FastDialog.simpleErrorDialog(PasswordChange.this, "You left some fields empty");
 				}else{
 					if(password.equals(passwordConfirm)){
-						progressDialog = ProgressDialog.show(PasswordChange.this, "", "");
+						progressDialog = new MaterialDialog.Builder(PasswordChange.this).progress(true, 0).show();
 						HashMap<String, String> data = new HashMap<String, String>();
 						data.put("action", "ChangePassword");
 						data.put("oldPassword", DataManager.selectData("password"));

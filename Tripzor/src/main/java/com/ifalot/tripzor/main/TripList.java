@@ -1,12 +1,18 @@
 package com.ifalot.tripzor.main;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.model.Trip;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
@@ -14,14 +20,9 @@ import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class TripList extends AppCompatActivity implements ResultListener {
 
@@ -88,13 +89,13 @@ public class TripList extends AppCompatActivity implements ResultListener {
 	public void onResultsSucceeded(String result, List<String> listResult) {
 		if(result.equals(Codes.USER_NOT_FOUND)){
 			FastDialog.simpleDialog(this, "ERROR", "An error occurred...",
-					"CLOSE", new DialogInterface.OnClickListener() {				
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					finish();
-					System.exit(RESULT_CANCELED);
-				}
-			});
+					"CLOSE", new MaterialDialog.SingleButtonCallback() {
+						@Override
+						public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+							TripList.this.finish();
+							System.exit(RESULT_CANCELED);
+						}
+					});
 		}else{
 			ListView lv = (ListView) findViewById(R.id.trip_list);
 			if(listResult.size() == 0) {
@@ -125,11 +126,11 @@ public class TripList extends AppCompatActivity implements ResultListener {
 		return trips;
 	}
 
-	private AdapterView.OnItemClickListener getListAction(ArrayList<Trip> trips){
+	private AdapterView.OnItemClickListener getListAction(final ArrayList<Trip> trips){
 		return new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+				trips.get(position);
 			}
 		};
 	}

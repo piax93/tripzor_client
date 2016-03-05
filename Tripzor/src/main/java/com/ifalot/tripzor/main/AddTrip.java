@@ -41,7 +41,11 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
                 HashMap<String, String> postData = new HashMap<String, String>();
                 for (int i = 0; i < ets.size(); i++) {
                     EditText et = (EditText) ets.get(i);
-                    if(et.getText().length() != 0) postData.put(fields[i], et.getText().toString());
+                    if(et.getText().length() == 0){
+                        FastDialog.simpleErrorDialog(AddTrip.this, "You left some fields empty !");
+                        return;
+                    }
+                    postData.put(fields[i], et.getText().toString());
                 }
                 postData.put("action", "AddTrip");
                 PostSender.sendPost(postData, AddTrip.this);

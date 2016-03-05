@@ -1,24 +1,25 @@
 package com.ifalot.tripzor.main;
 
-import java.util.HashMap;
-import java.util.List;
-
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
 
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.EditText;
-import android.widget.LinearLayout;
+import java.util.HashMap;
+import java.util.List;
 
 public class Register extends AppCompatActivity implements ResultListener {
 
@@ -75,18 +76,18 @@ public class Register extends AppCompatActivity implements ResultListener {
 			finish();
 		}else if(result.equals(Codes.USER_ALREADY_PRESENT)){
 			FastDialog.yesNoDialog(this, "User already present", "This email address is already registered on our server, would you like to recover you password?",
-					new DialogInterface.OnClickListener() {						
+					new MaterialDialog.SingleButtonCallback() {
 						@Override
-						public void onClick(DialogInterface dialog, int which) {
+						public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
 							Intent intent = new Intent(Register.this, null);
 							intent.putExtra("email", form.get("email"));
 							startActivity(intent);
 						}
 					},
-					new DialogInterface.OnClickListener() {						
+					new MaterialDialog.SingleButtonCallback() {
 						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();							
+						public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+							materialDialog.dismiss();
 						}
 					});
 		}else if(result.equals(Codes.ERROR)){
