@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,12 +27,30 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TripList extends AppCompatActivity implements ResultListener {
+public class TripList extends AppCompatActivity implements ResultListener, NavigationView.OnNavigationItemSelectedListener {
+
+	private NavigationView navigationView;
+	private DrawerLayout drawerLayout;
+	private int lastItemChecked = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_trip_list);	
+		setContentView(R.layout.activity_trip_list);
+
+		navigationView = (NavigationView) findViewById(R.id.navigation_view);
+		drawerLayout = (DrawerLayout) findViewById(R.id.trip_list_drawer);
+		navigationView.setNavigationItemSelectedListener(this);
+		ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+				R.string.openDrawer, R.string.closeDrawer){
+			@Override
+			public void onDrawerClosed(View view) {
+				super.onDrawerClosed(view);
+				if(lastItemChecked != 0)
+					navigationView.getMenu().findItem(lastItemChecked).setChecked(false);
+			}
+		};
+		drawerLayout.addDrawerListener(drawerToggle);
 		
 		HashMap<String, String> data = new HashMap<String, String>();
 		data.put("action", "ListTrips");
@@ -58,31 +79,6 @@ public class TripList extends AppCompatActivity implements ResultListener {
 		}
 
 
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.trip_list, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		switch (id) {
-		case R.id.password_change:
-			Intent intent = new Intent(this, PasswordChange.class);
-			startActivity(intent);
-			break;
-		case R.id.logout_item:
-			DataManager.deleteData("user");
-			startActivity(new Intent(this, Login.class));
-			finish();
-			break;
-		default:
-			break;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -133,5 +129,40 @@ public class TripList extends AppCompatActivity implements ResultListener {
 				trips.get(position);
 			}
 		};
+	}
+
+	@Override
+	public boolean onNavigationItemSelected(MenuItem item) {
+		item.setChecked(true);
+		lastItemChecked = item.getItemId();
+		int id = item.getItemId();
+		drawerLayout.closeDrawers();
+		switch (id) {
+			case R.id.password_change:
+				Intent intent = new Intent(TripList.this, PasswordChange.class);
+				startActivity(intent);
+				return true;
+			case R.id.logout_item:
+				DataManager.deleteData("user");
+				startActivity(new Intent(TripList.this, Login.class));
+				TripList.this.finish();
+				return true;
+			case R.id.info_item:
+				FastDialog.simpleDialog(TripList.this, "INFO", "App created by Matteo Piano (ifalot93@gmail.com).\n" +
+						"Original idea by Andrea Conte", "CLOSE");
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_MENU){
+			if(drawerLayout.isDrawerOpen(navigationView)) drawerLayout.closeDrawers();
+			else drawerLayout.openDrawer(navigationView);
+			return true;
+		}
+		return super.onKeyUp(keyCode, event);
 	}
 }

@@ -9,6 +9,7 @@ import android.widget.EditText;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
+import com.ifalot.tripzor.utils.FastProgressDialog;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
@@ -38,7 +39,8 @@ public class PasswordChange extends AppCompatActivity implements ResultListener{
 					FastDialog.simpleErrorDialog(PasswordChange.this, "You left some fields empty");
 				}else{
 					if(password.equals(passwordConfirm)){
-						progressDialog = new MaterialDialog.Builder(PasswordChange.this).progress(true, 0).show();
+						progressDialog = FastProgressDialog.buildProgressDialog(PasswordChange.this);
+						progressDialog.show();
 						HashMap<String, String> data = new HashMap<String, String>();
 						data.put("action", "ChangePassword");
 						data.put("oldPassword", DataManager.selectData("password"));

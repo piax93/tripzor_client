@@ -10,8 +10,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
+import com.ifalot.tripzor.utils.FastProgressDialog;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
@@ -26,6 +28,7 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
 
     private static int DIALOG_ID = 13;
     private static int currentDateView;
+    private MaterialDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,8 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
                     postData.put(fields[i], et.getText().toString());
                 }
                 postData.put("action", "AddTrip");
+                progressDialog = FastProgressDialog.buildProgressDialog(AddTrip.this);
+                progressDialog.show();
                 PostSender.sendPost(postData, AddTrip.this);
             }
         });
@@ -104,11 +109,12 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
 
     @Override
     public void onResultsSucceeded(String result, List<String> listResult) {
+        progressDialog.dismiss();
         if(result.equals(Codes.DONE)){
             DataManager.insertData("new_trip", "true");
             finish();
         }else{
-            FastDialog.simpleDialog(this, "ERROR", "An Error occurred during trip creation", "Cancel");
+            FastDialog.simpleDialog(this, "ERROR", "An Error occurred during trip creation", "CLOSE");
         }
     }
 

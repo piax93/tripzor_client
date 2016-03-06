@@ -2,11 +2,20 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.tripzor.main.TripList">
 
-    <item android:id="@+id/password_change"
-        android:orderInCategory="100"
-        android:title="@string/password_change" />
-    
-    <item android:id="@+id/logout_item"
-        android:title="@string/logout"/>
+    <group android:checkableBehavior="single">
+
+        <item android:id="@+id/password_change"
+              android:title="@string/password_change"
+              android:checked="false"/>
+
+        <item android:id="@+id/logout_item"
+              android:checked="false"
+              android:title="@string/logout"/>
+
+        <item android:id="@+id/info_item"
+              android:checked="false"
+              android:title="@string/info"/>
+
+    </group>
 
 </menu>

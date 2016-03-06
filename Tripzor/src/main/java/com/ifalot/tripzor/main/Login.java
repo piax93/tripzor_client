@@ -13,6 +13,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
+import com.ifalot.tripzor.utils.FastProgressDialog;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
@@ -34,7 +35,8 @@ public class Login extends AppCompatActivity implements ResultListener{
 		findViewById(R.id.login_form_subcontainer).setVisibility(View.INVISIBLE);
 
 		if(DataManager.isPresent("user")){
-			progressDialog = new MaterialDialog.Builder(Login.this).progress(true, 0).show();
+			progressDialog = FastProgressDialog.buildProgressDialog(this);
+			progressDialog.show();
 			email = DataManager.selectData("user");
 			password = DataManager.selectData("password");
 			login(email, password);
@@ -54,7 +56,8 @@ public class Login extends AppCompatActivity implements ResultListener{
 					if(email.length() == 0 || password.length() == 0){
 						FastDialog.simpleDialog(Login.this, "Error", "You left some fields empty", "CLOSE");
 					}else{
-						progressDialog = new MaterialDialog.Builder(Login.this).progress(true, 0).show();
+						progressDialog = FastProgressDialog.buildProgressDialog(Login.this);
+						progressDialog.show();
 						freshLogin = true;
 						login(email, password);
 					}
