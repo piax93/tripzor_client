@@ -49,7 +49,7 @@
         <activity
             android:name=".PasswordChange"
             android:label="@string/title_activity_password_change"
-            android:theme="@style/Theme.AppCompat.Dialog" >
+            android:theme="@style/Theme.AppCompat.Light.Dialog" >
         </activity>
         <activity
             android:name=".AddTrip"
