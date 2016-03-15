@@ -1,16 +1,17 @@
 package com.ifalot.tripzor.main;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.utils.FastProgressDialog;
@@ -79,10 +80,14 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
             }
         };
 
-        findViewById(R.id.start_date).setOnClickListener(dateOCL);
-        findViewById(R.id.start_date).setOnFocusChangeListener(dateOFCL);
-        findViewById(R.id.end_date).setOnClickListener(dateOCL);
-        findViewById(R.id.end_date).setOnFocusChangeListener(dateOFCL);
+        EditText startDate = (EditText) findViewById(R.id.start_date);
+        EditText endDate = (EditText) findViewById(R.id.end_date);
+        startDate.setInputType(InputType.TYPE_NULL);
+        endDate.setInputType(InputType.TYPE_NULL);
+        startDate.setOnClickListener(dateOCL);
+        startDate.setOnFocusChangeListener(dateOFCL);
+        endDate.setOnClickListener(dateOCL);
+        endDate.setOnFocusChangeListener(dateOFCL);
 
     }
 
@@ -99,10 +104,12 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
             }else{
                 String[] tmp = et.getText().toString().split("-");
                 year = Integer.parseInt(tmp[0]);
-                month = Integer.parseInt(tmp[1]);
+                month = Integer.parseInt(tmp[1])-1;
                 day = Integer.parseInt(tmp[2]);
             }
-            return new DatePickerDialog(this, this, year, month, day);
+            DatePickerDialog dpd = DatePickerDialog.newInstance(AddTrip.this, year, month, day);
+            dpd.setVibrate(false);
+            dpd.show(AddTrip.this.getSupportFragmentManager(), et.getHint().toString().split(" ")[0] + " Date");
         }
         return super.onCreateDialog(id);
     }
@@ -119,7 +126,7 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
     }
 
     @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+    public void onDateSet(DatePickerDialog datePickerDialog, int year, int monthOfYear, int dayOfMonth) {
         EditText et = (EditText) findViewById(currentDateView);
         String b = String.valueOf(year) + '-' + (monthOfYear+1) + '-' + dayOfMonth;
         et.setText(b);
