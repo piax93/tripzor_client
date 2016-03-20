@@ -71,7 +71,6 @@ public class Login extends AppCompatActivity implements ResultListener{
 					intent.putExtra("email", emailEditText.getText().toString());
 					intent.putExtra("password", passwordEditText.getText().toString());
 					startActivity(intent);
-					finish();
 				}
 			});
 			

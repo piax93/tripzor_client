@@ -8,10 +8,10 @@
     <string name="title_activity_register">Register</string>
     <string name="title_activity_password_recovery">Password Recovery</string>
     <string name="title_activity_password_change">PasswordChange</string>
-	<string name="password_change">Change Password</string>
-	<string name="new_password">New Password</string>
-	<string name="confirm">Confirm</string>
-	<string name="logout">Log Out</string>
+    <string name="password_change">Change Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm">Confirm</string>
+    <string name="logout">Log Out</string>
     <string name="title_activity_add_trip">New Trip</string>
     <string name="location">Location</string>
     <string name="start_date">Start Date (yyyy-mm-dd)</string>
@@ -22,5 +22,6 @@
     <string name="openDrawer">openDrawer</string>
     <string name="info">Info</string>
     <string name="old_password">Old Password</string>
+    <string name="title_activity_trip_detail">Trip</string>
 
 </resources>

@@ -71,17 +71,16 @@ public class Register extends AppCompatActivity implements ResultListener {
 		if(result.equals(Codes.DONE)){
 			DataManager.insertData("user", form.get("email"));
 			DataManager.insertData("password", form.get("password"));
-			Intent intent = new Intent(this, Login.class);
-			startActivity(intent);
 			finish();
 		}else if(result.equals(Codes.USER_ALREADY_PRESENT)){
 			FastDialog.yesNoDialog(this, "User already present", "This email address is already registered on our server, would you like to recover you password?",
 					new MaterialDialog.SingleButtonCallback() {
 						@Override
 						public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-							Intent intent = new Intent(Register.this, null);
+							Intent intent = new Intent(Register.this, PasswordRecovery.class);
 							intent.putExtra("email", form.get("email"));
 							startActivity(intent);
+							Register.this.finish();
 						}
 					},
 					new MaterialDialog.SingleButtonCallback() {

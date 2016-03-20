@@ -1,7 +1,6 @@
 package com.ifalot.tripzor.main;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -60,9 +59,7 @@ public class PasswordRecovery extends AppCompatActivity implements ResultListene
 						@Override
 						public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
 							DataManager.deleteData("user");
-							Intent intent = new Intent(PasswordRecovery.this, Login.class);
 							materialDialog.dismiss();
-							startActivity(intent);
 							PasswordRecovery.this.finish();
 						}
 					});

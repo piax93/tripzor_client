@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Tripzor/Tripzor.iml" filepath="$PROJECT_DIR$/Tripzor/Tripzor.iml" />
-      <module fileurl="file://$PROJECT_DIR$/tripzor.iml" filepath="$PROJECT_DIR$/tripzor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tripzor/Tripzor.iml" filepath="$PROJECT_DIR$/.idea/modules/Tripzor/Tripzor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tripzor.iml" filepath="$PROJECT_DIR$/.idea/modules/tripzor.iml" />
     </modules>
   </component>
 </project>

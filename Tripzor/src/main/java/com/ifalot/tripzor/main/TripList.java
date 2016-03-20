@@ -77,8 +77,6 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 			data.put("action", "ListTrips");
 			PostSender.sendPostML(data, this);
 		}
-
-
 	}
 
 	@Override
@@ -126,7 +124,11 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 		return new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				trips.get(position);
+				Trip t = trips.get(position);
+				Intent intent = new Intent(TripList.this, TripDetail.class);
+				intent.putExtra("TripId", t.getId());
+				intent.putExtra("TripName", t.toString());
+				startActivity(intent);
 			}
 		};
 	}
