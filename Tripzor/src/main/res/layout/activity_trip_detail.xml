@@ -10,4 +10,8 @@
         android:paddingBottom="@dimen/activity_vertical_margin"
         tools:context="com.ifalot.tripzor.main.TripDetail">
 
+    <TextView android:id="@+id/trip_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
 </RelativeLayout>

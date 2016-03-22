@@ -6,21 +6,52 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.widget.TextView;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.ifalot.tripzor.utils.FastDialog;
+import com.ifalot.tripzor.utils.FastProgressDialog;
+import com.ifalot.tripzor.utils.SwipeBack;
+import com.ifalot.tripzor.web.Codes;
+import com.ifalot.tripzor.web.PostSender;
+import com.ifalot.tripzor.web.ResultListener;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import static com.ifalot.tripzor.utils.OnSwipeTouchListener.SWIPE_THRESHOLD;
-import static com.ifalot.tripzor.utils.OnSwipeTouchListener.SWIPE_VELOCITY_THRESHOLD;
+import java.util.HashMap;
+import java.util.List;
 
-public class TripDetail extends AppCompatActivity implements GestureDetector.OnGestureListener {
+public class TripDetail extends AppCompatActivity implements ResultListener {
 
     private GestureDetectorCompat mDetector;
+    private MaterialDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_detail);
-        mDetector = new GestureDetectorCompat(this, this);
+        mDetector = new GestureDetectorCompat(this, new SwipeBack(this));
+        progressDialog = FastProgressDialog.buildProgressDialog(this);
         Intent prev = getIntent();
         setTitle(prev.getStringExtra("TripName"));
+        HashMap<String, String> postData = new HashMap<String, String>();
+        postData.put("action", "TripDetail");
+        postData.put("tripid", String.valueOf(prev.getIntExtra("TripId", -1)));
+        PostSender.sendPost(postData, this);
+        progressDialog.show();
+    }
+
+    @Override
+    public void onResultsSucceeded(String result, List<String> listResult) {
+        progressDialog.dismiss();
+        if(result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.TRIP_NOT_FOUND)){
+            FastDialog.simpleErrorDialog(this, "Error retrieving data");
+        } else {
+            try {
+                TextView tv = (TextView) findViewById(R.id.trip_detail);
+                JSONObject jo = new JSONObject(result);
+                tv.setText(jo.getString("place"));
+            } catch (JSONException e) {}
+        }
     }
 
     @Override
@@ -28,30 +59,5 @@ public class TripDetail extends AppCompatActivity implements GestureDetector.OnG
         this.mDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        boolean result = false;
-
-        float diffY = e2.getY() - e1.getY();
-        float diffX = e2.getX() - e1.getX();
-        if (Math.abs(diffX) > Math.abs(diffY)) {
-            if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                if (diffX > 0) {
-                    // onSwipeRight
-                    TripDetail.this.finish();
-                }
-            }
-            result = true;
-        }
-
-        return result;
-    }
-
-    @Override public boolean onDown(MotionEvent e) { return false; }
-    @Override public void onShowPress(MotionEvent e) {}
-    @Override public boolean onSingleTapUp(MotionEvent e) { return false; }
-    @Override public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) { return false; }
-    @Override public void onLongPress(MotionEvent e) {}
 
 }
