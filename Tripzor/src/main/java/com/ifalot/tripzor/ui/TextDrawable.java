@@ -12,6 +12,7 @@ public class TextDrawable extends ShapeDrawable {
     private final Paint borderPaint;
     private static final float SHADE_FACTOR = 0.9f;
     private final String text;
+    private int elementId;
     private final int color;
     private final RectShape shape;
     private final int height;
@@ -32,6 +33,7 @@ public class TextDrawable extends ShapeDrawable {
         // text and color
         text = builder.toUpperCase ? builder.text.toUpperCase() : builder.text;
         color = builder.color;
+        elementId = builder.elementId;
 
         // text paint settings
         fontSize = builder.fontSize;
@@ -61,6 +63,10 @@ public class TextDrawable extends ShapeDrawable {
         return Color.rgb((int)(SHADE_FACTOR * Color.red(color)),
                 (int)(SHADE_FACTOR * Color.green(color)),
                 (int)(SHADE_FACTOR * Color.blue(color)));
+    }
+
+    public int getElementId(){
+        return this.elementId;
     }
 
     @Override
@@ -156,6 +162,8 @@ public class TextDrawable extends ShapeDrawable {
 
         private boolean toUpperCase;
 
+        private int elementId;
+
         public float radius;
 
         private Builder() {
@@ -170,6 +178,7 @@ public class TextDrawable extends ShapeDrawable {
             fontSize = -1;
             isBold = false;
             toUpperCase = false;
+            elementId = -1;
         }
 
         public IConfigBuilder width(int width) {
@@ -255,9 +264,10 @@ public class TextDrawable extends ShapeDrawable {
         }
 
         @Override
-        public TextDrawable buildRound(String text, int color) {
+        public TextDrawable buildRound(String text, int color, int elementId) {
             round();
-            return build(text, color);
+            this.elementId = elementId;
+            return build(String.valueOf(text.charAt(0)).toUpperCase(), color);
         }
 
         @Override
@@ -307,6 +317,6 @@ public class TextDrawable extends ShapeDrawable {
 
         public TextDrawable buildRoundRect(String text, int color, int radius);
 
-        public TextDrawable buildRound(String text, int color);
+        public TextDrawable buildRound(String text, int color, int elementId);
     }
 }
