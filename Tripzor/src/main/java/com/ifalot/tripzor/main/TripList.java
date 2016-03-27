@@ -17,6 +17,7 @@ import android.widget.ListView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.model.Trip;
+import com.ifalot.tripzor.ui.TripListAdapter;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.Codes;
@@ -98,8 +99,7 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 						android.R.layout.simple_list_item_1, listResult));
 			}else{
 				ArrayList<Trip> trips = parseTrips(listResult);
-				lv.setAdapter(new ArrayAdapter<Trip>(this,
-						android.R.layout.simple_list_item_1, trips));
+				lv.setAdapter(new TripListAdapter(this, trips));
 				lv.setOnItemClickListener(getListAction(trips));
 			}
 

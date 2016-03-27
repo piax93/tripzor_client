@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:padding="8dp">
+
+    <ImageView
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:id="@+id/trip_item_icon"
+             />
+
+    <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/trip_item_title"
+            android:layout_marginLeft="15dp"
+            android:textSize="24sp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"/>
+
+</LinearLayout>
