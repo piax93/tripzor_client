@@ -8,9 +8,11 @@
 		android:fitsSystemWindows="true"
 		tools:context=".TripList" >
 
-	<RelativeLayout android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:layout_marginTop="4dp" >
+	<android.support.v4.widget.SwipeRefreshLayout
+			android:id="@+id/swipe_refresh_trips"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_marginTop="4dp" >
 
 		<ListView
 			android:id="@+id/trip_list"
@@ -27,7 +29,7 @@
 			android:layout_alignParentEnd="true"
 			android:src="@drawable/ic_action_new" />
 
-	</RelativeLayout>
+	</android.support.v4.widget.SwipeRefreshLayout>
 
 	<android.support.design.widget.NavigationView
 			android:id="@+id/navigation_view"

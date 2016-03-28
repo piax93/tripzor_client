@@ -6,14 +6,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.*;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.model.Trip;
@@ -28,11 +27,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TripList extends AppCompatActivity implements ResultListener, NavigationView.OnNavigationItemSelectedListener {
+public class TripList extends AppCompatActivity implements ResultListener, NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
 
 	private NavigationView navigationView;
 	private DrawerLayout drawerLayout;
 	private int lastItemChecked = 0;
+	private ListView tripslv;
+	private TripListAdapter tripListAdapter;
+	private SwipeRefreshLayout swipeRefreshLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,9 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 			}
 		};
 		drawerLayout.addDrawerListener(drawerToggle);
-		
+		swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_trips);
+		swipeRefreshLayout.setOnRefreshListener(this);
+
 		HashMap<String, String> data = new HashMap<String, String>();
 		data.put("action", "ListTrips");
 		PostSender.sendPostML(data, this);
@@ -61,11 +65,12 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				if(tripListAdapter != null) tripListAdapter.deselectAll(tripslv);
 				Intent intent = new Intent(TripList.this, AddTrip.class);
 				startActivity(intent);
 			}
 		});
-		
+
 	}
 
 	@Override
@@ -82,6 +87,7 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 
 	@Override
 	public void onResultsSucceeded(String result, List<String> listResult) {
+		swipeRefreshLayout.setRefreshing(false);
 		if(result.equals(Codes.USER_NOT_FOUND)){
 			FastDialog.simpleDialog(this, "ERROR", "An error occurred...",
 					"CLOSE", new MaterialDialog.SingleButtonCallback() {
@@ -92,15 +98,27 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 						}
 					});
 		}else{
-			ListView lv = (ListView) findViewById(R.id.trip_list);
+			tripslv = (ListView) findViewById(R.id.trip_list);
 			if(listResult.size() == 0) {
 				listResult.add("No trips linked to your account");
-				lv.setAdapter(new ArrayAdapter<String>(this,
+				tripslv.setAdapter(new ArrayAdapter<String>(this,
 						android.R.layout.simple_list_item_1, listResult));
 			}else{
-				ArrayList<Trip> trips = parseTrips(listResult);
-				lv.setAdapter(new TripListAdapter(this, trips));
-				lv.setOnItemClickListener(getListAction(trips));
+				tripListAdapter = new TripListAdapter(this, parseTrips(listResult));
+				tripslv.setAdapter(tripListAdapter);
+				tripslv.setOnItemClickListener(getListAction());
+
+				tripslv.setOnScrollListener(new AbsListView.OnScrollListener() {
+					@Override public void onScrollStateChanged(AbsListView view, int scrollState) {}
+
+					@Override
+					public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+						if(firstVisibleItem == 0){
+
+						}
+					}
+				});
+
 			}
 
 		}
@@ -120,11 +138,11 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 		return trips;
 	}
 
-	private AdapterView.OnItemClickListener getListAction(final ArrayList<Trip> trips){
+	private AdapterView.OnItemClickListener getListAction(){
 		return new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Trip t = trips.get(position);
+				Trip t = tripListAdapter.getTrips().get(position);
 				Intent intent = new Intent(TripList.this, TripDetail.class);
 				intent.putExtra("TripId", t.getId());
 				intent.putExtra("TripName", t.toString());
@@ -166,5 +184,27 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 			return true;
 		}
 		return super.onKeyUp(keyCode, event);
+	}
+
+	public void itemsAreSelected(){
+		tripslv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
+		});
+		tripslv.setClickable(false);
+	}
+
+	public void noItemsAreSelected(){
+		tripslv.setOnItemClickListener(getListAction());
+		tripslv.setClickable(true);
+	}
+
+	@Override
+	public void onRefresh() {
+		tripListAdapter.deselectAll(tripslv);
+		swipeRefreshLayout.setRefreshing(true);
+		HashMap<String, String> data = new HashMap<String, String>();
+		data.put("action", "ListTrips");
+		PostSender.sendPostML(data, this);
 	}
 }
