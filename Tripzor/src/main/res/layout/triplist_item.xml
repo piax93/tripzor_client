@@ -7,10 +7,9 @@
               android:background="@drawable/list_bg" >
 
     <ImageView
-            android:layout_width="54dp"
-            android:layout_height="54dp"
-            android:id="@+id/trip_item_icon"
-             />
+            android:layout_width="@dimen/text_drawable_dim"
+            android:layout_height="@dimen/text_drawable_dim"
+            android:id="@+id/trip_item_icon" />
 
     <TextView
             android:layout_width="0dp"

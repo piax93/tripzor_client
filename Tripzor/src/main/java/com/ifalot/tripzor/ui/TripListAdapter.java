@@ -63,6 +63,7 @@ public class TripListAdapter extends ArrayAdapter<Trip> implements View.OnClickL
     }
 
     public void deselectAll(ListView lv){
+        if(nSelected == 0) return;
         for (int i = 0; i < checked.size(); i++) {
             if(checked.get(i)){
                 LinearLayout ll = (LinearLayout) lv.getChildAt(i);
@@ -75,5 +76,12 @@ public class TripListAdapter extends ArrayAdapter<Trip> implements View.OnClickL
         return this.trips;
     }
 
+    public List<Trip> getSelected(){
+        List<Trip> selected = new LinkedList<Trip>();
+        for (int i = 0; i < trips.size(); i++) {
+            if(checked.get(i)) selected.add(trips.get(i));
+        }
+        return selected;
+    }
 
 }

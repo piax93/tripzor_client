@@ -23,5 +23,7 @@
     <string name="info">Info</string>
     <string name="old_password">Old Password</string>
     <string name="title_activity_trip_detail">Trip</string>
+    <string name="deselect">Deselect All</string>
+    <string name="delete">Delete</string>
 
 </resources>

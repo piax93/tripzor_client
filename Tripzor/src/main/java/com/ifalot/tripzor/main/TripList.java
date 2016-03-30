@@ -10,6 +10,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
@@ -35,12 +36,15 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 	private ListView tripslv;
 	private TripListAdapter tripListAdapter;
 	private SwipeRefreshLayout swipeRefreshLayout;
+	private Menu actionBarMenu;
+	private boolean deleting;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_trip_list);
 
+		deleting = false;
 		navigationView = (NavigationView) findViewById(R.id.navigation_view);
 		drawerLayout = (DrawerLayout) findViewById(R.id.trip_list_drawer);
 		navigationView.setNavigationItemSelectedListener(this);
@@ -57,10 +61,6 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 		swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_trips);
 		swipeRefreshLayout.setOnRefreshListener(this);
 
-		HashMap<String, String> data = new HashMap<String, String>();
-		data.put("action", "ListTrips");
-		PostSender.sendPostML(data, this);
-
 		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.button_add_trip);
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -70,6 +70,8 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 				startActivity(intent);
 			}
 		});
+
+		this.onRefresh();
 
 	}
 
@@ -98,29 +100,34 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 						}
 					});
 		}else{
-			tripslv = (ListView) findViewById(R.id.trip_list);
-			if(listResult.size() == 0) {
-				listResult.add("No trips linked to your account");
-				tripslv.setAdapter(new ArrayAdapter<String>(this,
-						android.R.layout.simple_list_item_1, listResult));
-			}else{
-				tripListAdapter = new TripListAdapter(this, parseTrips(listResult));
-				tripslv.setAdapter(tripListAdapter);
-				tripslv.setOnItemClickListener(getListAction());
-
-				tripslv.setOnScrollListener(new AbsListView.OnScrollListener() {
-					@Override public void onScrollStateChanged(AbsListView view, int scrollState) {}
-
-					@Override
-					public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-						if(firstVisibleItem == 0){
-
+			if(deleting){
+				deleting = false;
+				String res = listResult.get(listResult.size()-1);
+				if(res.equals(Codes.DONE)){
+					if (result.startsWith("_")) {
+						StringBuffer sb = new StringBuffer();
+						for (int i = 0; i < listResult.size() - 1; i++) {
+							sb.append("- ").append(listResult.get(i).substring(6)).append("\n");
 						}
+						FastDialog.simpleDialog(this, "Warning", "The following trips cannot be deleted " +
+								"because you are not the creator:\n " + sb.toString(), "CLOSE");
 					}
-				});
-
+				}else if (res.equals(Codes.ERROR)){
+					FastDialog.simpleErrorDialog(this, "Database error occurred :(");
+				}
+				this.onRefresh();
+			}else{
+				tripslv = (ListView) findViewById(R.id.trip_list);
+				if(listResult.size() == 0) {
+					listResult.add("No trips linked to your account");
+					tripslv.setAdapter(new ArrayAdapter<String>(this,
+							android.R.layout.simple_list_item_1, listResult));
+				}else{
+					tripListAdapter = new TripListAdapter(this, parseTrips(listResult));
+					tripslv.setAdapter(tripListAdapter);
+					tripslv.setOnItemClickListener(getListAction());
+				}
 			}
-
 		}
 	}
 
@@ -182,8 +189,36 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 			if(drawerLayout.isDrawerOpen(navigationView)) drawerLayout.closeDrawers();
 			else drawerLayout.openDrawer(navigationView);
 			return true;
+		} else if (keyCode == KeyEvent.KEYCODE_BACK){
+			if(!tripslv.isClickable()){
+				tripListAdapter.deselectAll(tripslv);
+				return true;
+			}
 		}
 		return super.onKeyUp(keyCode, event);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		actionBarMenu = menu;
+		getMenuInflater().inflate(R.menu.trip_list_select, menu);
+		actionBarMenu.setGroupVisible(R.id.trip_select_option_group, false);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()){
+			case R.id.deselect_all:
+				tripListAdapter.deselectAll(tripslv);
+				break;
+			case R.id.delete_selected:
+				this.deleteSelected();
+				break;
+			default:
+				break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	public void itemsAreSelected(){
@@ -192,16 +227,31 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
 		});
 		tripslv.setClickable(false);
+		actionBarMenu.setGroupVisible(R.id.trip_select_option_group, true);
 	}
 
 	public void noItemsAreSelected(){
 		tripslv.setOnItemClickListener(getListAction());
 		tripslv.setClickable(true);
+		actionBarMenu.setGroupVisible(R.id.trip_select_option_group, false);
+	}
+
+	public void deleteSelected(){
+		swipeRefreshLayout.setRefreshing(true);
+		List<Trip> selected = tripListAdapter.getSelected();
+		HashMap<String, String> postData = new HashMap<String, String>();
+		postData.put("action", "DeleteTrips");
+		StringBuffer sb = new StringBuffer();
+		for(Trip t : selected) sb.append(t.getId()).append(',');
+		sb.deleteCharAt(sb.length()-1);
+		postData.put("ids", sb.toString());
+		deleting = true;
+		PostSender.sendPostML(postData, this);
 	}
 
 	@Override
 	public void onRefresh() {
-		tripListAdapter.deselectAll(tripslv);
+		if(tripListAdapter != null) tripListAdapter.deselectAll(tripslv);
 		swipeRefreshLayout.setRefreshing(true);
 		HashMap<String, String> data = new HashMap<String, String>();
 		data.put("action", "ListTrips");
