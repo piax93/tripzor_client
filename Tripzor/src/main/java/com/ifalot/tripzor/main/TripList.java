@@ -104,14 +104,15 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 				deleting = false;
 				String res = listResult.get(listResult.size()-1);
 				if(res.equals(Codes.DONE)){
-					if (result.startsWith("_")) {
-						StringBuffer sb = new StringBuffer();
-						for (int i = 0; i < listResult.size() - 1; i++) {
-							sb.append("- ").append(listResult.get(i).substring(6)).append("\n");
-						}
-						FastDialog.simpleDialog(this, "Warning", "The following trips cannot be deleted " +
-								"because you are not the creator:\n " + sb.toString(), "CLOSE");
-					}
+					// Now server removes the user from partecipants
+//					if (result.startsWith("_")) {
+//						StringBuffer sb = new StringBuffer();
+//						for (int i = 0; i < listResult.size() - 1; i++) {
+//							sb.append("- ").append(listResult.get(i).substring(6)).append("\n");
+//						}
+//						FastDialog.simpleDialog(this, "Warning", "The following trips cannot be deleted " +
+//								"because you are not the creator:\n " + sb.toString(), "CLOSE");
+//					}
 				}else if (res.equals(Codes.ERROR)){
 					FastDialog.simpleErrorDialog(this, "Database error occurred :(");
 				}
