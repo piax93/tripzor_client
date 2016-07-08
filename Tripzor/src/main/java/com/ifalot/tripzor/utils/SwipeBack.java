@@ -3,6 +3,7 @@ package com.ifalot.tripzor.utils;
 import android.app.Activity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import com.ifalot.tripzor.main.R;
 
 /**
  * Created by mat on 3/22/16.
@@ -27,7 +28,7 @@ public class SwipeBack implements GestureDetector.OnGestureListener {
             if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                 if (diffX > 0) {
                     // onSwipeRight
-                    context.finish();
+                    context.onBackPressed();
                 }
             }
             result = true;

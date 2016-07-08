@@ -9,9 +9,6 @@ import android.widget.LinearLayout;
 import com.ifalot.tripzor.main.R;
 import com.ifalot.tripzor.model.Trip;
 
-/**
- * Created by mat on 3/28/16.
- */
 public class FlipAnimator implements Animation.AnimationListener {
 
     private Animation animation1;

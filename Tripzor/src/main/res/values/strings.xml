@@ -25,5 +25,6 @@
     <string name="title_activity_trip_detail">Trip</string>
     <string name="deselect">Deselect All</string>
     <string name="delete">Delete</string>
+    <string name="edit_profile">Edit Profile</string>
 
 </resources>

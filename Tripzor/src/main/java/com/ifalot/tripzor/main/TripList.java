@@ -1,10 +1,15 @@
 package com.ifalot.tripzor.main;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -47,9 +52,17 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 		deleting = false;
 		navigationView = (NavigationView) findViewById(R.id.navigation_view);
 		drawerLayout = (DrawerLayout) findViewById(R.id.trip_list_drawer);
+		View navHeader = navigationView.inflateHeaderView(R.layout.navigation_header_view);
+
+		ImageView navHeaderFg = (ImageView) navHeader.findViewById(R.id.header_view_fgimg);
+		Resources res = getResources();
+		Bitmap src = BitmapFactory.decodeResource(res, R.drawable.newlogo_4);
+		RoundedBitmapDrawable rd = RoundedBitmapDrawableFactory.create(res, src);
+		rd.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
+		navHeaderFg.setImageDrawable(rd);
+
 		navigationView.setNavigationItemSelectedListener(this);
-		ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-				R.string.openDrawer, R.string.closeDrawer){
+		ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.openDrawer, R.string.closeDrawer){
 			@Override
 			public void onDrawerClosed(View view) {
 				super.onDrawerClosed(view);
@@ -165,9 +178,14 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 		lastItemChecked = item.getItemId();
 		int id = item.getItemId();
 		drawerLayout.closeDrawers();
+		Intent intent;
 		switch (id) {
 			case R.id.password_change:
-				Intent intent = new Intent(TripList.this, PasswordChange.class);
+				intent = new Intent(TripList.this, PasswordChange.class);
+				startActivity(intent);
+				return true;
+			case R.id.profile_edit_item:
+				intent = new Intent(TripList.this, EditProfile.class);
 				startActivity(intent);
 				return true;
 			case R.id.logout_item:

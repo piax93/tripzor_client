@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.utils.FastDialog;
@@ -48,9 +48,15 @@ public class TripDetail extends AppCompatActivity implements ResultListener {
         } else {
             try {
                 TextView tv = (TextView) findViewById(R.id.trip_detail);
-                JSONObject jo = new JSONObject(result);
+                JSONObject jo = new JSONObject(result); // fields: tripid, name, place, start, end
                 tv.setText(jo.getString("place"));
-            } catch (JSONException e) {}
+            } catch (JSONException e) {
+                RelativeLayout l = (RelativeLayout) findViewById(R.id.trip_detail_layout);
+                TextView tv = new TextView(this);
+                tv.setText("Error retrieving data");
+                l.removeAllViewsInLayout();
+                l.addView(tv);
+            }
         }
     }
 
@@ -60,4 +66,9 @@ public class TripDetail extends AppCompatActivity implements ResultListener {
         return super.onTouchEvent(event);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
+    }
 }

@@ -8,6 +8,10 @@
               android:title="@string/password_change"
               android:checked="false"/>
 
+        <item android:id="@+id/profile_edit_item"
+              android:title="@string/edit_profile"
+              android:checked="false"/>
+
         <item android:id="@+id/logout_item"
               android:checked="false"
               android:title="@string/logout"/>
