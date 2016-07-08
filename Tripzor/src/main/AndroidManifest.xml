@@ -63,7 +63,9 @@
                 android:label="@string/title_activity_trip_detail"
                 android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".EditProfile">
+        <activity android:name=".EditProfile"
+                  android:label="@string/edit_profile"
+                  android:screenOrientation="portrait" >
         </activity>
     </application>
 

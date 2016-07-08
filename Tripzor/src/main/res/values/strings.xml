@@ -26,5 +26,7 @@
     <string name="deselect">Deselect All</string>
     <string name="delete">Delete</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="update_info">Update Info</string>
+    <string name="prompt_nick">Nickname</string>
 
 </resources>

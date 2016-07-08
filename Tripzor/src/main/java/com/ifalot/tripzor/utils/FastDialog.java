@@ -11,6 +11,10 @@ public class FastDialog {
 	public static void simpleErrorDialog(Context context, String message){
 		simpleDialog(context, "Error", message, null);
 	}
+
+	public static void simpleErrorDialog(Context context, String message, MaterialDialog.SingleButtonCallback action){
+		simpleDialog(context, "Error", message, null, action);
+	}
 	
 	public static void simpleDialog(Context context, String title, String message, String button){
 		simpleDialog(context, title, message, button, new MaterialDialog.SingleButtonCallback() {
