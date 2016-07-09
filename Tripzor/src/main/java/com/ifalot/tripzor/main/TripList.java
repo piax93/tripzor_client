@@ -56,9 +56,13 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 
 		ImageView navHeaderFg = (ImageView) navHeader.findViewById(R.id.header_view_fgimg);
 		Resources res = getResources();
-		Bitmap src = BitmapFactory.decodeResource(res, R.drawable.newlogo_4);
-		RoundedBitmapDrawable rd = RoundedBitmapDrawableFactory.create(res, src);
-		rd.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
+		Bitmap bm = BitmapFactory.decodeResource(res, R.drawable.newlogo_4);
+		int squaresize = Math.min(bm.getWidth(), bm.getHeight());
+		int x = bm.getWidth() > bm.getHeight() ? (bm.getWidth() - squaresize)/2 : 0;
+		int y = bm.getWidth() > bm.getHeight() ? 0 : (bm.getHeight() - squaresize)/2;
+		bm = Bitmap.createBitmap(bm, x, y, squaresize, squaresize);
+		RoundedBitmapDrawable rd = RoundedBitmapDrawableFactory.create(res, bm);
+		rd.setCornerRadius(Math.min(bm.getWidth(), bm.getHeight()) / 2.0f);
 		navHeaderFg.setImageDrawable(rd);
 
 		navigationView.setNavigationItemSelectedListener(this);
@@ -255,17 +259,29 @@ public class TripList extends AppCompatActivity implements ResultListener, Navig
 		actionBarMenu.setGroupVisible(R.id.trip_select_option_group, false);
 	}
 
-	public void deleteSelected(){
-		swipeRefreshLayout.setRefreshing(true);
-		List<Trip> selected = tripListAdapter.getSelected();
-		HashMap<String, String> postData = new HashMap<String, String>();
-		postData.put("action", "DeleteTrips");
-		StringBuffer sb = new StringBuffer();
-		for(Trip t : selected) sb.append(t.getId()).append(',');
-		sb.deleteCharAt(sb.length()-1);
-		postData.put("ids", sb.toString());
-		deleting = true;
-		PostSender.sendPostML(postData, this);
+	protected void deleteSelected(){
+		final List<Trip> selected = tripListAdapter.getSelected();
+		FastDialog.yesNoDialog(this, "Delete Trips", "Are you sure you want to delete " + selected.size()
+				+ " trip" + (selected.size() > 1 ? "s" : "") + "?",
+				new MaterialDialog.SingleButtonCallback() {
+					@Override
+					public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+						swipeRefreshLayout.setRefreshing(true);
+						HashMap<String, String> postData = new HashMap<String, String>();
+						postData.put("action", "DeleteTrips");
+						StringBuffer sb = new StringBuffer();
+						for(Trip t : selected) sb.append(t.getId()).append(',');
+						sb.deleteCharAt(sb.length()-1);
+						postData.put("ids", sb.toString());
+						deleting = true;
+						PostSender.sendPostML(postData, TripList.this);
+					}
+				}, new MaterialDialog.SingleButtonCallback() {
+					@Override
+					public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+						tripListAdapter.deselectAll(tripslv);
+					}
+				});
 	}
 
 	@Override

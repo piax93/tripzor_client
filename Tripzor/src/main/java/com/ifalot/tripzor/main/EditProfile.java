@@ -11,6 +11,8 @@ import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.provider.SyncStateContract;
 import android.support.annotation.NonNull;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -120,8 +122,14 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
                     pfd.close();
 
                     if(bm != null) {
+                        int squaresize = Math.min(bm.getWidth(), bm.getHeight());
+                        int x = bm.getWidth() > bm.getHeight() ? (bm.getWidth() - squaresize)/2 : 0;
+                        int y = bm.getWidth() > bm.getHeight() ? 0 : (bm.getHeight() - squaresize)/2;
+                        bm = Bitmap.createBitmap(bm, x, y, squaresize, squaresize);
+                        RoundedBitmapDrawable rd = RoundedBitmapDrawableFactory.create(getResources(), bm);
+                        rd.setCornerRadius(Math.max(bm.getWidth(), bm.getHeight()) / 2.0f);
                         ImageView img = (ImageView) findViewById(R.id.profile_picture);
-                        img.setImageBitmap(bm);
+                        img.setImageDrawable(rd);
                     }
 
                 }catch (Exception e){}

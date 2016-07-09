@@ -122,6 +122,7 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 			HttpParams params = new BasicHttpParams();
 			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+			HttpProtocolParams.setUserAgent(params, "tripzor-app");
 			SchemeRegistry registry = new SchemeRegistry();
 			registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 	        registry.register(new Scheme("https", socketFactory, 443));
