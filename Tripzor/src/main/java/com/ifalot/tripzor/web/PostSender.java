@@ -2,6 +2,7 @@ package com.ifalot.tripzor.web;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -26,9 +27,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,11 +45,22 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 	protected static CookieStore cookieStore;
 	
 	private boolean multipleLines;
+	private boolean getimage;
+	private boolean putimage;
+	private String image_file;
 	private ResultListener listener;
 	
 	protected PostSender(boolean multipleLines, ResultListener listener){
 		this.listener = listener;
 		this.multipleLines = multipleLines;
+	}
+
+	protected  PostSender(boolean multipleLines, boolean putimage, boolean getimage, String image_file, ResultListener listener){
+		this.getimage = getimage;
+		this.putimage = putimage;
+		this.image_file = image_file;
+		this.multipleLines = multipleLines;
+		this.listener = listener;
 	}
 	
 	public static void initCookieStore(){
@@ -70,45 +80,73 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 		PostSender sender = new PostSender(true, listener);
 		sender.execute(postData);
 	}
+
+	@SuppressWarnings("unchecked")
+	public static void getMedia(String file_id, String filename, ResultListener listener){
+		HashMap<String, String> postData = new HashMap<String, String>();
+		postData.put("action", "GetMedia");
+		postData.put("file", file_id);
+		PostSender sender = new PostSender(false, false, true, filename, listener);
+		sender.execute(postData);
+	}
+
+	public static void putMedia(HashMap<String, String> postData, String filename, ResultListener listener){
+
+	}
 	
 	@Override
 	protected void onPostExecute(String result) {
-		if(this.multipleLines){
+		if (this.multipleLines) {
 			String[] tmpArr = result.split("\n");
 			List<String> listResult = new ArrayList<String>();
 			for (String aTmpArr : tmpArr) {
 				if (aTmpArr.length() != 0) listResult.add(aTmpArr);
 			}
 			listener.onResultsSucceeded(result, listResult);
-		}else{
+		} else {
 			listener.onResultsSucceeded(result, null);
 		}
 	}
 
 	@Override
 	protected String doInBackground(HashMap<String, String>... params) {
-		HttpClient client = getClient();		
-		HttpPost post = new HttpPost(URL_STRING);
-		HashMap<String, String> postData = params[0];
-		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-		for(Entry<String, String> entry : postData.entrySet()){
-			urlParameters.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-		}
 		try {
-			post.setEntity(new UrlEncodedFormEntity(urlParameters));
-			HttpResponse response = client.execute(post, localContext);
-			BufferedReader rd = new BufferedReader(
-	                        new InputStreamReader(response.getEntity().getContent()));
-			StringBuffer result = new StringBuffer();
-			String line = "";
-			while ((line = rd.readLine()) != null) {
-				result.append(line);
-				if(this.multipleLines) result.append('\n');
+			HttpClient client = getClient();
+			HttpPost post = new HttpPost(URL_STRING);
+			if(this.putimage){
+				// Multipart library needed
+
+			} else {
+				HashMap<String, String> postData = params[0];
+				List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+				for (Entry<String, String> entry : postData.entrySet()) {
+					urlParameters.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+				}
+				post.setEntity(new UrlEncodedFormEntity(urlParameters));
 			}
-			return result.toString().trim();
+
+			HttpResponse response = client.execute(post, localContext);
+
+			if (this.getimage && response.getEntity().getContentType().getValue().startsWith("image")) {
+				this.image_file += "." + response.getEntity().getContentType().getValue().split("/")[1];
+				FileOutputStream fos = new FileOutputStream(this.image_file);
+				response.getEntity().writeTo(fos);
+				fos.close();
+				return Codes.DONE;
+			} else {
+				BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+				StringBuilder resultstr = new StringBuilder();
+				String line;
+				while ((line = rd.readLine()) != null) {
+					resultstr.append(line);
+					if (this.multipleLines) resultstr.append('\n');
+				}
+				return resultstr.toString().trim();
+			}
+
 		} catch (IOException e) {
 			Log.d("ciao", e.getMessage());
-			return Codes.FATAL_ERROR;
+			return Codes.ERROR;
 		} 
 		
 	}

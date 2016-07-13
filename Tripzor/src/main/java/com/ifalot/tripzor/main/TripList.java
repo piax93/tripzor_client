@@ -33,7 +33,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TripList extends AppCompatActivity implements ResultListener, NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
+public class TripList extends AppCompatActivity implements ResultListener,
+		NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
 
 	private NavigationView navigationView;
 	private DrawerLayout drawerLayout;

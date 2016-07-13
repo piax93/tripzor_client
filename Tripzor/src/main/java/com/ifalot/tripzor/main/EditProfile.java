@@ -24,10 +24,12 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.utils.FastProgressDialog;
+import com.ifalot.tripzor.utils.Media;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,7 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
 
     final private int PICK_IMAGE = 1;
     private MaterialDialog progressDialog;
+    private boolean loading_image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,26 +88,42 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
     @Override
     public void onResultsSucceeded(String result, List<String> listResult) {
         progressDialog.dismiss();
-        if(result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.ERROR)){
-            String verb = result.equals(Codes.ERROR) ? "updating" : "retrieving";
-            FastDialog.simpleErrorDialog(this, "Error " + verb + " info", new MaterialDialog.SingleButtonCallback() {
-                @Override
-                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                    EditProfile.this.finish();
+
+        if(loading_image){
+            loading_image = false;
+            ImageView img = (ImageView) findViewById(R.id.profile_picture);
+            img.setImageDrawable(Media.getRoundedImage(this, "profile"));
+        }else {
+            if (result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.ERROR)) {
+                String verb = result.equals(Codes.ERROR) ? "updating" : "retrieving";
+                FastDialog.simpleErrorDialog(this, "Error " + verb + " info", new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        EditProfile.this.finish();
+                    }
+                });
+            } else if (result.equals(Codes.DONE)) {
+                finish();
+            } else {
+                if (listResult.size() >= 4) {
+                    EditText nick = (EditText) findViewById(R.id.nickname);
+                    EditText name = (EditText) findViewById(R.id.name);
+                    EditText surname = (EditText) findViewById(R.id.surname);
+                    EditText phone = (EditText) findViewById(R.id.phone_number);
+                    nick.setText(listResult.get(0));
+                    name.setText(listResult.get(1));
+                    surname.setText(listResult.get(2));
+                    phone.setText(listResult.get(3));
+                    String profile_image = Media.getImagePath(this, "profile", null);
+
+                    if(profile_image != null) {
+                        ImageView img = (ImageView) findViewById(R.id.profile_picture);
+                        img.setImageDrawable(Media.getRoundedImage(this, "profile"));
+                    }else{
+                        loading_image = true;
+                        PostSender.getMedia("profile", Media.getFilePath(this, "profile"), this);
+                    }
                 }
-            });
-        } else if(result.equals(Codes.DONE)){
-            finish();
-        } else {
-            if(listResult.size() >= 4) {
-                EditText nick = (EditText) findViewById(R.id.nickname);
-                EditText name = (EditText) findViewById(R.id.name);
-                EditText surname = (EditText) findViewById(R.id.surname);
-                EditText phone = (EditText) findViewById(R.id.phone_number);
-                nick.setText(listResult.get(0));
-                name.setText(listResult.get(1));
-                surname.setText(listResult.get(2));
-                phone.setText(listResult.get(3));
             }
         }
     }
@@ -118,19 +137,13 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
                     Uri mediaUri = data.getData();
                     ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(mediaUri, "r");
                     FileDescriptor fd = pfd.getFileDescriptor();
-                    Bitmap bm = BitmapFactory.decodeFileDescriptor(fd);
-                    pfd.close();
 
-                    if(bm != null) {
-                        int squaresize = Math.min(bm.getWidth(), bm.getHeight());
-                        int x = bm.getWidth() > bm.getHeight() ? (bm.getWidth() - squaresize)/2 : 0;
-                        int y = bm.getWidth() > bm.getHeight() ? 0 : (bm.getHeight() - squaresize)/2;
-                        bm = Bitmap.createBitmap(bm, x, y, squaresize, squaresize);
-                        RoundedBitmapDrawable rd = RoundedBitmapDrawableFactory.create(getResources(), bm);
-                        rd.setCornerRadius(Math.max(bm.getWidth(), bm.getHeight()) / 2.0f);
+                    if(fd.valid()) {
                         ImageView img = (ImageView) findViewById(R.id.profile_picture);
-                        img.setImageDrawable(rd);
+                        img.setImageDrawable(Media.getRoundedImage(this, fd));
                     }
+
+                    pfd.close();
 
                 }catch (Exception e){}
             } else {
