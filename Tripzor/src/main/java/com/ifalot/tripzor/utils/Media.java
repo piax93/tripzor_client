@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 
@@ -43,7 +44,7 @@ public class Media {
         return rd;
     }
 
-    public static Drawable getRoundedImage(Context context, String filename){
+    public static Drawable getRoundedImage(Context context, String filename, @Nullable String ext){
         String path = getImagePath(context, filename, null);
         if(path == null) return null;
         Bitmap bm = BitmapFactory.decodeFile(path);

@@ -2,7 +2,6 @@ package com.ifalot.tripzor.web;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -16,9 +15,12 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicHeaderValueFormatter;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
@@ -35,7 +37,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "unchecked"})
 public class PostSender extends AsyncTask<HashMap<String, String>, String, String> {
 	
 	public static final String URL_STRING = "http://10.0.2.2:80/tripzor/";
@@ -69,19 +71,16 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 	    localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static void sendPost(HashMap<String, String> postData, ResultListener listener){
 		PostSender sender = new PostSender(false, listener);
 		sender.execute(postData);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static void sendPostML(HashMap<String, String> postData, ResultListener listener){
 		PostSender sender = new PostSender(true, listener);
 		sender.execute(postData);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void getMedia(String file_id, String filename, ResultListener listener){
 		HashMap<String, String> postData = new HashMap<String, String>();
 		postData.put("action", "GetMedia");
@@ -91,7 +90,8 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 	}
 
 	public static void putMedia(HashMap<String, String> postData, String filename, ResultListener listener){
-
+		PostSender sender = new PostSender(false, true, false, filename, listener);
+		sender.execute(postData);
 	}
 	
 	@Override
@@ -113,11 +113,17 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 		try {
 			HttpClient client = getClient();
 			HttpPost post = new HttpPost(URL_STRING);
-			if(this.putimage){
-				// Multipart library needed
+			HashMap<String, String> postData = params[0];
 
+			if(this.putimage){
+				MultipartEntityBuilder meb = MultipartEntityBuilder.create();
+				for (Entry<String, String> entry : postData.entrySet()){
+					meb.addTextBody(entry.getKey(), entry.getValue());
+				}
+				File image = new File(this.image_file);
+				meb.addBinaryBody(image.getName().split("\\.")[0], image, ContentType.create("image/jpg"), image.getName());
+				post.setEntity(meb.build());
 			} else {
-				HashMap<String, String> postData = params[0];
 				List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 				for (Entry<String, String> entry : postData.entrySet()) {
 					urlParameters.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
