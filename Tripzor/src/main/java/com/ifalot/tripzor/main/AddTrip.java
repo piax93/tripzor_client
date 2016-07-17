@@ -8,7 +8,6 @@ import android.text.InputType;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fourmob.datetimepicker.date.DatePickerDialog;
@@ -19,10 +18,7 @@ import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class AddTrip extends AppCompatActivity implements ResultListener, DatePickerDialog.OnDateSetListener {
@@ -51,10 +47,14 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
                     }
                     postData.put(fields[i], et.getText().toString());
                 }
-                postData.put("action", "AddTrip");
-                progressDialog = FastProgressDialog.buildProgressDialog(AddTrip.this);
-                progressDialog.show();
-                PostSender.sendPost(postData, AddTrip.this);
+                if(compareDate ( ((EditText)ets.get(2)).getText().toString(), ((EditText)ets.get(3)).getText().toString()) ) {
+                    postData.put("action", "AddTrip");
+                    progressDialog = FastProgressDialog.buildProgressDialog(AddTrip.this);
+                    progressDialog.show();
+                    PostSender.sendPost(postData, AddTrip.this);
+                }else{
+                    FastDialog.simpleErrorDialog(AddTrip.this, "Start date must be before end date");
+                }
             }
         });
 
@@ -97,14 +97,22 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
             EditText et = (EditText) findViewById(currentDateView);
             int day, month, year;
             if(et.getText().length() == 0){
-                Calendar c = Calendar.getInstance();
-                year = c.get(Calendar.YEAR);
-                month = c.get(Calendar.MONTH);
-                day = c.get(Calendar.DAY_OF_MONTH);
+                EditText sd = (EditText) findViewById(R.id.start_date);
+                if(currentDateView == R.id.end_date && sd.getText().length() > 4) {
+                    String[] tmp = sd.getText().toString().split("-");
+                    year = Integer.parseInt(tmp[0]);
+                    month = Integer.parseInt(tmp[1]) - 1;
+                    day = Integer.parseInt(tmp[2]);
+                } else {
+                    Calendar c = Calendar.getInstance();
+                    year = c.get(Calendar.YEAR);
+                    month = c.get(Calendar.MONTH);
+                    day = c.get(Calendar.DAY_OF_MONTH);
+                }
             }else{
                 String[] tmp = et.getText().toString().split("-");
                 year = Integer.parseInt(tmp[0]);
-                month = Integer.parseInt(tmp[1])-1;
+                month = Integer.parseInt(tmp[1]) - 1;
                 day = Integer.parseInt(tmp[2]);
             }
             DatePickerDialog dpd = DatePickerDialog.newInstance(AddTrip.this, year, month, day);
@@ -127,8 +135,29 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
 
     @Override
     public void onDateSet(DatePickerDialog datePickerDialog, int year, int monthOfYear, int dayOfMonth) {
-        EditText et = (EditText) findViewById(currentDateView);
-        String b = String.valueOf(year) + '-' + (monthOfYear+1) + '-' + dayOfMonth;
-        et.setText(b);
+        Calendar c = Calendar.getInstance();
+        if(compareDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH),
+                year, monthOfYear, dayOfMonth)) {
+            EditText et = (EditText) findViewById(currentDateView);
+            String b = String.valueOf(year) + '-' + (monthOfYear + 1) + '-' + dayOfMonth;
+            et.setText(b);
+        }else{
+            FastDialog.simpleErrorDialog(this, "You cannot select dates in the past");
+        }
+    }
+
+    private boolean compareDate(String start, String end){
+        Scanner startScn = new Scanner(start);
+        Scanner endScn = new Scanner(end);
+        startScn.useDelimiter("-");
+        endScn.useDelimiter("-");
+        return compareDate(startScn.nextInt(), startScn.nextInt(), startScn.nextInt(),
+                endScn.nextInt(), endScn.nextInt(), endScn.nextInt());
+    }
+
+    private boolean compareDate(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay){
+        return endYear > startYear
+                || (endYear == startYear && endMonth > startMonth)
+                || (endYear == startYear && endMonth == startMonth && endDay >= startDay);
     }
 }

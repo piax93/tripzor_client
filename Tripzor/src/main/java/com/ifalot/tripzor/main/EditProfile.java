@@ -2,19 +2,13 @@ package com.ifalot.tripzor.main;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
-import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
-import android.provider.SyncStateContract;
-import android.support.annotation.NonNull;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.utils.FastProgressDialog;
 import com.ifalot.tripzor.utils.Media;
@@ -50,6 +45,7 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
         progressDialog = FastProgressDialog.buildProgressDialog(this);
         uploading_image = false;
         loading_image = false;
+        DataManager.insertData("update_image", "false");
 
         Button b = (Button) findViewById(R.id.update_info_button);
         b.setOnClickListener(new View.OnClickListener() {
@@ -109,10 +105,15 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
             if (loading_image) {
                 loading_image = false;
                 ImageView img = (ImageView) findViewById(R.id.profile_picture);
-                img.setImageDrawable(Media.getRoundedImage(this, "profile", "jpg"));
+                img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
             } else {
                 if (result.equals(Codes.DONE)) {
-                    if (uploading_image) uploading_image = false;
+                    if (uploading_image) {
+                        uploading_image = false;
+                        ImageView img = (ImageView) findViewById(R.id.profile_picture);
+                        img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
+                        DataManager.updateValue("update_image", "true");
+                    }
                     else finish();
                 } else {
                     if (listResult != null && listResult.size() >= 4) {
@@ -124,13 +125,14 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
                         name.setText(listResult.get(1));
                         surname.setText(listResult.get(2));
                         phone.setText(listResult.get(3));
-                        String profile_image = Media.getImagePath(this, "profile", "jpg");
 
-                        if (profile_image != null) {
+                        String profile_image = Media.getImagePath(this, "profile", "png");
+                        if (profile_image != null && new File(profile_image).exists()) {
                             ImageView img = (ImageView) findViewById(R.id.profile_picture);
-                            img.setImageDrawable(Media.getRoundedImage(this, "profile", "jpg"));
+                            img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
                         } else {
                             loading_image = true;
+                            progressDialog.show();
                             PostSender.getMedia("profile", Media.getFilePath(this, "profile"), this);
                         }
                     }
@@ -149,27 +151,26 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
                     ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(mediaUri, "r");
                     FileDescriptor fd = pfd.getFileDescriptor();
 
-                    if(fd.valid()) {
-                        ImageView img = (ImageView) findViewById(R.id.profile_picture);
-                        img.setImageDrawable(Media.getRoundedImage(this, fd));
+                    if(fd != null && fd.valid()) {
+                        HashMap<String, String> postData = new HashMap<String, String>();
+                        postData.put("action", "UploadMedia");
+                        Bitmap b = BitmapFactory.decodeFileDescriptor(fd);
+                        String path = Media.getImagePath(this, "profile", "png");
+                        FileOutputStream fos = new FileOutputStream(path);
+                        b.compress(Bitmap.CompressFormat.PNG, 50, fos);
+                        fos.close();
+                        uploading_image = true;
+                        progressDialog.show();
+                        PostSender.putMedia(postData, path, this);
                     }
-
-                    HashMap<String, String> postData = new HashMap<String, String>();
-                    postData.put("action", "UploadMedia");
-                    Bitmap b = BitmapFactory.decodeFileDescriptor(fd);
-                    String path = Media.getImagePath(this, "profile", "jpg");
-                    FileOutputStream fos = new FileOutputStream(path);
-                    b.compress(Bitmap.CompressFormat.JPEG, 50, fos);
-                    fos.close();
-
-                    uploading_image = true;
-                    PostSender.putMedia(postData, path, this);
 
                     pfd.close();
 
-                }catch (Exception e){}
+                }catch (Exception e){
+                    FastDialog.simpleErrorDialog(this, "Image not loaded");
+                }
             } else {
-                FastDialog.simpleErrorDialog(this, "No image loaded");
+                // FastDialog.simpleErrorDialog(this, "No image selected");
             }
         }
     }

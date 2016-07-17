@@ -1,15 +1,10 @@
 package com.ifalot.tripzor.main;
 
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,17 +13,22 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.model.Trip;
 import com.ifalot.tripzor.ui.TripListAdapter;
 import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
+import com.ifalot.tripzor.utils.Media;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,12 +38,14 @@ public class TripList extends AppCompatActivity implements ResultListener,
 
 	private NavigationView navigationView;
 	private DrawerLayout drawerLayout;
+	private ImageView navHeaderFg;
 	private int lastItemChecked = 0;
 	private ListView tripslv;
 	private TripListAdapter tripListAdapter;
 	private SwipeRefreshLayout swipeRefreshLayout;
 	private Menu actionBarMenu;
 	private boolean deleting;
+	private boolean loading_image;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,19 +57,16 @@ public class TripList extends AppCompatActivity implements ResultListener,
 		drawerLayout = (DrawerLayout) findViewById(R.id.trip_list_drawer);
 		View navHeader = navigationView.inflateHeaderView(R.layout.navigation_header_view);
 
-		ImageView navHeaderFg = (ImageView) navHeader.findViewById(R.id.header_view_fgimg);
-		Resources res = getResources();
-		Bitmap bm = BitmapFactory.decodeResource(res, R.drawable.newlogo_4);
-		int squaresize = Math.min(bm.getWidth(), bm.getHeight());
-		int x = bm.getWidth() > bm.getHeight() ? (bm.getWidth() - squaresize)/2 : 0;
-		int y = bm.getWidth() > bm.getHeight() ? 0 : (bm.getHeight() - squaresize)/2;
-		bm = Bitmap.createBitmap(bm, x, y, squaresize, squaresize);
-		RoundedBitmapDrawable rd = RoundedBitmapDrawableFactory.create(res, bm);
-		rd.setCornerRadius(Math.min(bm.getWidth(), bm.getHeight()) / 2.0f);
-		navHeaderFg.setImageDrawable(rd);
+		navHeaderFg = (ImageView) navHeader.findViewById(R.id.header_view_fgimg);
+		String profile_image = Media.getImagePath(this, "profile", "png");
+		if (profile_image != null && new File(profile_image).exists()) {
+			navHeaderFg.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
+			loading_image = false;
+		} else loading_image = true;
 
 		navigationView.setNavigationItemSelectedListener(this);
-		ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.openDrawer, R.string.closeDrawer){
+		ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+				R.string.openDrawer, R.string.closeDrawer){
 			@Override
 			public void onDrawerClosed(View view) {
 				super.onDrawerClosed(view);
@@ -97,19 +96,23 @@ public class TripList extends AppCompatActivity implements ResultListener,
 	protected void onRestart() {
 		super.onRestart();
 		String newtrip = DataManager.selectData("new_trip");
-		if(newtrip.equals("true")){
-			DataManager.insertData("new_trip", "false");
-			HashMap<String, String> data = new HashMap<String, String>();
-			data.put("action", "ListTrips");
-			PostSender.sendPostML(data, this);
+		String update_image = DataManager.selectData("update_image");
+		if(newtrip != null && newtrip.equals("true")){
+			DataManager.updateValue("new_trip", "false");
+			this.onRefresh();
+		}
+		if(update_image != null && update_image.equals("true")){
+			DataManager.updateValue("update_image", "false");
+			navHeaderFg.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
 		}
 	}
 
 	@Override
 	public void onResultsSucceeded(String result, List<String> listResult) {
 		swipeRefreshLayout.setRefreshing(false);
-		if(result.equals(Codes.USER_NOT_FOUND)){
-			FastDialog.simpleDialog(this, "ERROR", "An error occurred...",
+		if(result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.ERROR)){
+			if(loading_image) loading_image = false;
+			else FastDialog.simpleDialog(this, "ERROR", "An error occurred...",
 					"CLOSE", new MaterialDialog.SingleButtonCallback() {
 						@Override
 						public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
@@ -135,6 +138,9 @@ public class TripList extends AppCompatActivity implements ResultListener,
 					FastDialog.simpleErrorDialog(this, "Database error occurred :(");
 				}
 				this.onRefresh();
+			}else if(loading_image && result.equals(Codes.DONE)) {
+				navHeaderFg.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
+				loading_image = false;
 			}else{
 				tripslv = (ListView) findViewById(R.id.trip_list);
 				if(listResult.size() == 0) {
@@ -145,6 +151,10 @@ public class TripList extends AppCompatActivity implements ResultListener,
 					tripListAdapter = new TripListAdapter(this, parseTrips(listResult));
 					tripslv.setAdapter(tripListAdapter);
 					tripslv.setOnItemClickListener(getListAction());
+				}
+				if(loading_image) {
+					swipeRefreshLayout.setRefreshing(true);
+					PostSender.getMedia("profile", Media.getFilePath(this, "profile"), this);
 				}
 			}
 		}
