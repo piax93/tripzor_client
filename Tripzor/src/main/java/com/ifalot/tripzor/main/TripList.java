@@ -9,6 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +39,7 @@ public class TripList extends AppCompatActivity implements ResultListener,
 
 	private NavigationView navigationView;
 	private DrawerLayout drawerLayout;
+	private Toolbar toolbar;
 	private ImageView navHeaderFg;
 	private int lastItemChecked = 0;
 	private ListView tripslv;
@@ -52,9 +54,14 @@ public class TripList extends AppCompatActivity implements ResultListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_trip_list);
 
+		toolbar = (Toolbar) findViewById(R.id.trip_list_toolbar);
+		setSupportActionBar(toolbar);
+		getSupportActionBar().setElevation(18.0f);
+
 		deleting = false;
 		navigationView = (NavigationView) findViewById(R.id.navigation_view);
 		drawerLayout = (DrawerLayout) findViewById(R.id.trip_list_drawer);
+
 		View navHeader = navigationView.inflateHeaderView(R.layout.navigation_header_view);
 
 		navHeaderFg = (ImageView) navHeader.findViewById(R.id.header_view_fgimg);
@@ -65,7 +72,7 @@ public class TripList extends AppCompatActivity implements ResultListener,
 		} else loading_image = true;
 
 		navigationView.setNavigationItemSelectedListener(this);
-		ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+		ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
 				R.string.openDrawer, R.string.closeDrawer){
 			@Override
 			public void onDrawerClosed(View view) {
@@ -75,6 +82,7 @@ public class TripList extends AppCompatActivity implements ResultListener,
 			}
 		};
 		drawerLayout.addDrawerListener(drawerToggle);
+		drawerToggle.syncState();
 		swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_trips);
 		swipeRefreshLayout.setOnRefreshListener(this);
 
@@ -224,7 +232,7 @@ public class TripList extends AppCompatActivity implements ResultListener,
 			else drawerLayout.openDrawer(navigationView);
 			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_BACK){
-			if(!tripslv.isClickable()){
+			if(tripslv != null && !tripslv.isClickable()){
 				tripListAdapter.deselectAll(tripslv);
 				return true;
 			}

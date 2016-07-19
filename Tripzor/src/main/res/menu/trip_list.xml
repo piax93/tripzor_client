@@ -4,12 +4,12 @@
 
     <group android:checkableBehavior="single">
 
-        <item android:id="@+id/password_change"
-              android:title="@string/password_change"
-              android:checked="false"/>
-
         <item android:id="@+id/profile_edit_item"
               android:title="@string/edit_profile"
+              android:checked="false"/>
+
+        <item android:id="@+id/password_change"
+              android:title="@string/password_change"
               android:checked="false"/>
 
         <item android:id="@+id/logout_item"
