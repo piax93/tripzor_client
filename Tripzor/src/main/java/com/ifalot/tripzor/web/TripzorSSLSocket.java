@@ -17,10 +17,11 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 
 @SuppressWarnings("deprecation")
-public class TripzorSSLSocket extends SSLSocketFactory {
-    SSLContext sslContext = SSLContext.getInstance("TLS");
+class TripzorSSLSocket extends SSLSocketFactory {
 
-    public TripzorSSLSocket(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+    private SSLContext sslContext = SSLContext.getInstance("TLS");
+
+    TripzorSSLSocket(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
         super(truststore);
         TrustManager tm = new X509TrustManager() {
             public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {

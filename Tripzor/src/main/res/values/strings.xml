@@ -28,5 +28,7 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="update_info">Update Info</string>
     <string name="prompt_nick">Nickname</string>
+    <string name="start_date_tv">Start Date</string>
+    <string name="end_date_tv">End Date</string>
 
 </resources>

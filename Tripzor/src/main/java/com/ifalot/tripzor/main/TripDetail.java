@@ -2,11 +2,12 @@ package com.ifalot.tripzor.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.utils.FastProgressDialog;
@@ -31,6 +32,7 @@ public class TripDetail extends AppCompatActivity implements ResultListener {
         setContentView(R.layout.activity_trip_detail);
         mDetector = new GestureDetectorCompat(this, new SwipeBack(this));
         progressDialog = FastProgressDialog.buildProgressDialog(this);
+
         Intent prev = getIntent();
         setTitle(prev.getStringExtra("TripName"));
         HashMap<String, String> postData = new HashMap<String, String>();
@@ -44,19 +46,17 @@ public class TripDetail extends AppCompatActivity implements ResultListener {
     public void onResultsSucceeded(String result, List<String> listResult) {
         progressDialog.dismiss();
         if(result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.TRIP_NOT_FOUND)){
-            FastDialog.simpleErrorDialog(this, "Error retrieving data");
+            error();
         } else {
             try {
-                TextView tv = (TextView) findViewById(R.id.trip_detail);
+                TextView place = (TextView) findViewById(R.id.location_tv);
+                TextView start = (TextView) findViewById(R.id.startdate_tv);
+                TextView end = (TextView) findViewById(R.id.enddate_tv);
                 JSONObject jo = new JSONObject(result); // fields: tripid, name, place, start, end
-                tv.setText(jo.getString("place"));
-            } catch (JSONException e) {
-                RelativeLayout l = (RelativeLayout) findViewById(R.id.trip_detail_layout);
-                TextView tv = new TextView(this);
-                tv.setText("Error retrieving data");
-                l.removeAllViewsInLayout();
-                l.addView(tv);
-            }
+                place.setText(jo.getString("place"));
+                start.setText(jo.getString("start"));
+                end.setText(jo.getString("end"));
+            } catch (JSONException e) { error(); }
         }
     }
 
@@ -71,4 +71,14 @@ public class TripDetail extends AppCompatActivity implements ResultListener {
         super.onBackPressed();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
     }
+
+    private void error(){
+        FastDialog.simpleErrorDialog(this, "Error retrieving data", new MaterialDialog.SingleButtonCallback() {
+            @Override
+            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                TripDetail.this.onBackPressed();
+            }
+        });
+    }
+
 }
