@@ -21,6 +21,7 @@ import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.utils.FastProgressDialog;
 import com.ifalot.tripzor.utils.Media;
 import com.ifalot.tripzor.web.Codes;
+import com.ifalot.tripzor.web.MediaListener;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
 
@@ -30,11 +31,10 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.List;
 
-public class EditProfile extends AppCompatActivity implements ResultListener{
+public class EditProfile extends AppCompatActivity implements MediaListener {
 
     final private int PICK_IMAGE = 1;
     private MaterialDialog progressDialog;
-    private boolean loading_image;
     private boolean uploading_image;
 
     @Override
@@ -44,7 +44,6 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
 
         progressDialog = FastProgressDialog.buildProgressDialog(this);
         uploading_image = false;
-        loading_image = false;
         DataManager.insertData("update_image", "false");
 
         Button b = (Button) findViewById(R.id.update_info_button);
@@ -82,6 +81,13 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
         data.put("action", "UserInfo");
         PostSender.sendPostML(data, this);
         progressDialog.show();
+
+        String profile_image = Media.getImagePath(this, "profile", "png");
+        if (profile_image != null && new File(profile_image).exists()) {
+            ImageView img = (ImageView) findViewById(R.id.profile_picture);
+            img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
+        } else PostSender.getMedia("profile", Media.getFilePath(this, "profile"), this);
+
     }
 
 
@@ -90,10 +96,6 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
         progressDialog.dismiss();
 
         if (result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.ERROR)) {
-            if(loading_image){
-                loading_image = false;
-                return;
-            }
             String verb = result.equals(Codes.ERROR) ? "updating" : "retrieving";
             FastDialog.simpleErrorDialog(this, "Error " + verb + " info", new MaterialDialog.SingleButtonCallback() {
                 @Override
@@ -102,42 +104,34 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
                 }
             });
         }else {
-            if (loading_image) {
-                loading_image = false;
-                ImageView img = (ImageView) findViewById(R.id.profile_picture);
-                img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
+            if (result.equals(Codes.DONE)) {
+                if (uploading_image) {
+                    uploading_image = false;
+                    ImageView img = (ImageView) findViewById(R.id.profile_picture);
+                    img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
+                    DataManager.updateValue("update_image", "true");
+                }
+                else finish();
             } else {
-                if (result.equals(Codes.DONE)) {
-                    if (uploading_image) {
-                        uploading_image = false;
-                        ImageView img = (ImageView) findViewById(R.id.profile_picture);
-                        img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
-                        DataManager.updateValue("update_image", "true");
-                    }
-                    else finish();
-                } else {
-                    if (listResult != null && listResult.size() >= 4) {
-                        EditText nick = (EditText) findViewById(R.id.nickname);
-                        EditText name = (EditText) findViewById(R.id.name);
-                        EditText surname = (EditText) findViewById(R.id.surname);
-                        EditText phone = (EditText) findViewById(R.id.phone_number);
-                        nick.setText(listResult.get(0));
-                        name.setText(listResult.get(1));
-                        surname.setText(listResult.get(2));
-                        phone.setText(listResult.get(3));
-
-                        String profile_image = Media.getImagePath(this, "profile", "png");
-                        if (profile_image != null && new File(profile_image).exists()) {
-                            ImageView img = (ImageView) findViewById(R.id.profile_picture);
-                            img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
-                        } else {
-                            loading_image = true;
-                            progressDialog.show();
-                            PostSender.getMedia("profile", Media.getFilePath(this, "profile"), this);
-                        }
-                    }
+                if (listResult != null && listResult.size() >= 4) {
+                    EditText nick = (EditText) findViewById(R.id.nickname);
+                    EditText name = (EditText) findViewById(R.id.name);
+                    EditText surname = (EditText) findViewById(R.id.surname);
+                    EditText phone = (EditText) findViewById(R.id.phone_number);
+                    nick.setText(listResult.get(0));
+                    name.setText(listResult.get(1));
+                    surname.setText(listResult.get(2));
+                    phone.setText(listResult.get(3));
                 }
             }
+        }
+    }
+
+    @Override
+    public void onMediaReceived(String result) {
+        if(result.equals(Codes.DONE)) {
+            ImageView img = (ImageView) findViewById(R.id.profile_picture);
+            img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
         }
     }
 
@@ -174,4 +168,5 @@ public class EditProfile extends AppCompatActivity implements ResultListener{
             }
         }
     }
+
 }

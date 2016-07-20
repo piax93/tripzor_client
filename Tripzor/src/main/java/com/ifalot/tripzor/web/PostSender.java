@@ -96,15 +96,19 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 	
 	@Override
 	protected void onPostExecute(String result) {
-		if (this.multipleLines) {
-			String[] tmpArr = result.split("\n");
-			List<String> listResult = new ArrayList<String>();
-			for (String aTmpArr : tmpArr) {
-				if (aTmpArr.length() != 0) listResult.add(aTmpArr);
-			}
-			listener.onResultsSucceeded(result, listResult);
+		if(this.getimage){
+			((MediaListener)this.listener).onMediaReceived(result);
 		} else {
-			listener.onResultsSucceeded(result, null);
+			if (this.multipleLines) {
+				String[] tmpArr = result.split("\n");
+				List<String> listResult = new ArrayList<String>();
+				for (String aTmpArr : tmpArr) {
+					if (aTmpArr.length() != 0) listResult.add(aTmpArr);
+				}
+				listener.onResultsSucceeded(result, listResult);
+			} else {
+				listener.onResultsSucceeded(result, null);
+			}
 		}
 	}
 

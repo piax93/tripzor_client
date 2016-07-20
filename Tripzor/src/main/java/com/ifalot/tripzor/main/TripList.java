@@ -26,20 +26,19 @@ import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.utils.Media;
 import com.ifalot.tripzor.web.Codes;
+import com.ifalot.tripzor.web.MediaListener;
 import com.ifalot.tripzor.web.PostSender;
-import com.ifalot.tripzor.web.ResultListener;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TripList extends AppCompatActivity implements ResultListener,
+public class TripList extends AppCompatActivity implements MediaListener,
 		NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
 
 	private NavigationView navigationView;
 	private DrawerLayout drawerLayout;
-	private Toolbar toolbar;
 	private ImageView navHeaderFg;
 	private int lastItemChecked = 0;
 	private ListView tripslv;
@@ -47,16 +46,16 @@ public class TripList extends AppCompatActivity implements ResultListener,
 	private SwipeRefreshLayout swipeRefreshLayout;
 	private Menu actionBarMenu;
 	private boolean deleting;
-	private boolean loading_image;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_trip_list);
 
-		toolbar = (Toolbar) findViewById(R.id.trip_list_toolbar);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.trip_list_toolbar);
 		setSupportActionBar(toolbar);
-		getSupportActionBar().setElevation(18.0f);
+		try { getSupportActionBar().setElevation(18.0f); }
+		catch (NullPointerException e) { }
 
 		deleting = false;
 		navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -68,8 +67,7 @@ public class TripList extends AppCompatActivity implements ResultListener,
 		String profile_image = Media.getImagePath(this, "profile", "png");
 		if (profile_image != null && new File(profile_image).exists()) {
 			navHeaderFg.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
-			loading_image = false;
-		} else loading_image = true;
+		} else PostSender.getMedia("profile", Media.getFilePath(this, "profile"), this);
 
 		navigationView.setNavigationItemSelectedListener(this);
 		ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
@@ -119,8 +117,7 @@ public class TripList extends AppCompatActivity implements ResultListener,
 	public void onResultsSucceeded(String result, List<String> listResult) {
 		swipeRefreshLayout.setRefreshing(false);
 		if(result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.ERROR)){
-			if(loading_image) loading_image = false;
-			else FastDialog.simpleDialog(this, "ERROR", "An error occurred...",
+			FastDialog.simpleDialog(this, "ERROR", "An error occurred...",
 					"CLOSE", new MaterialDialog.SingleButtonCallback() {
 						@Override
 						public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
@@ -146,9 +143,6 @@ public class TripList extends AppCompatActivity implements ResultListener,
 					FastDialog.simpleErrorDialog(this, "Database error occurred :(");
 				}
 				this.onRefresh();
-			}else if(loading_image && result.equals(Codes.DONE)) {
-				navHeaderFg.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
-				loading_image = false;
 			}else{
 				tripslv = (ListView) findViewById(R.id.trip_list);
 				if(listResult.size() == 0) {
@@ -160,11 +154,14 @@ public class TripList extends AppCompatActivity implements ResultListener,
 					tripslv.setAdapter(tripListAdapter);
 					tripslv.setOnItemClickListener(getListAction());
 				}
-				if(loading_image) {
-					swipeRefreshLayout.setRefreshing(true);
-					PostSender.getMedia("profile", Media.getFilePath(this, "profile"), this);
-				}
 			}
+		}
+	}
+
+	@Override
+	public void onMediaReceived(String result) {
+		if(result.equals(Codes.DONE)) {
+			navHeaderFg.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
 		}
 	}
 
@@ -288,7 +285,7 @@ public class TripList extends AppCompatActivity implements ResultListener,
 						swipeRefreshLayout.setRefreshing(true);
 						HashMap<String, String> postData = new HashMap<String, String>();
 						postData.put("action", "DeleteTrips");
-						StringBuffer sb = new StringBuffer();
+						StringBuilder sb = new StringBuilder();
 						for(Trip t : selected) sb.append(t.getId()).append(',');
 						sb.deleteCharAt(sb.length()-1);
 						postData.put("ids", sb.toString());
