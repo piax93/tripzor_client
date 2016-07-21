@@ -6,6 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -15,6 +20,7 @@ import com.ifalot.tripzor.utils.SwipeBack;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,6 +62,11 @@ public class TripDetail extends AppCompatActivity implements ResultListener {
                 place.setText(jo.getString("place"));
                 start.setText(jo.getString("start"));
                 end.setText(jo.getString("end"));
+                JSONArray participants = jo.getJSONArray("participants");
+                ListView part_list = (ListView) findViewById(R.id.participant_list);
+                String[] v = new String[participants.length()];
+                for(int i = 0; i < v.length; i++) v[i] = participants.getString(i);
+                part_list.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, v));
             } catch (JSONException e) { error(); }
         }
     }
