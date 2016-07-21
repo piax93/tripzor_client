@@ -7,13 +7,12 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.ifalot.tripzor.ui.ParticipantsAdapter;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.utils.FastProgressDialog;
 import com.ifalot.tripzor.utils.SwipeBack;
@@ -27,10 +26,11 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 
-public class TripDetail extends AppCompatActivity implements ResultListener {
+public class TripDetail extends AppCompatActivity implements ResultListener, View.OnTouchListener {
 
     private GestureDetectorCompat mDetector;
     private MaterialDialog progressDialog;
+    private ListView part_list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +38,8 @@ public class TripDetail extends AppCompatActivity implements ResultListener {
         setContentView(R.layout.activity_trip_detail);
         mDetector = new GestureDetectorCompat(this, new SwipeBack(this));
         progressDialog = FastProgressDialog.buildProgressDialog(this);
+        part_list = (ListView) findViewById(R.id.participant_list);
+        part_list.setOnTouchListener(this);
 
         Intent prev = getIntent();
         setTitle(prev.getStringExtra("TripName"));
@@ -62,11 +64,13 @@ public class TripDetail extends AppCompatActivity implements ResultListener {
                 place.setText(jo.getString("place"));
                 start.setText(jo.getString("start"));
                 end.setText(jo.getString("end"));
+
                 JSONArray participants = jo.getJSONArray("participants");
-                ListView part_list = (ListView) findViewById(R.id.participant_list);
                 String[] v = new String[participants.length()];
                 for(int i = 0; i < v.length; i++) v[i] = participants.getString(i);
-                part_list.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, v));
+                // part_list.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, v));
+                part_list.setAdapter(new ParticipantsAdapter(this, participants));
+
             } catch (JSONException e) { error(); }
         }
     }
@@ -83,6 +87,12 @@ public class TripDetail extends AppCompatActivity implements ResultListener {
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
     }
 
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        this.mDetector.onTouchEvent(motionEvent);
+        return view.onTouchEvent(motionEvent);
+    }
+
     private void error(){
         FastDialog.simpleErrorDialog(this, "Error retrieving data", new MaterialDialog.SingleButtonCallback() {
             @Override
@@ -91,5 +101,4 @@ public class TripDetail extends AppCompatActivity implements ResultListener {
             }
         });
     }
-
 }

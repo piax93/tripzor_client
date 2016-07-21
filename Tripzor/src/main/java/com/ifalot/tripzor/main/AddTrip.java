@@ -141,6 +141,7 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
             EditText et = (EditText) findViewById(currentDateView);
             String b = String.valueOf(year) + '-' + (monthOfYear + 1) + '-' + dayOfMonth;
             et.setText(b);
+            if(currentDateView == R.id.start_date) findViewById(R.id.end_date).performClick();
         }else{
             FastDialog.simpleErrorDialog(this, "You cannot select dates in the past");
         }
