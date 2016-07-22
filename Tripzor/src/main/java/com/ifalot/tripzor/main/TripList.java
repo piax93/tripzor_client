@@ -150,7 +150,7 @@ public class TripList extends AppCompatActivity implements MediaListener,
 					tripslv.setAdapter(new ArrayAdapter<String>(this,
 							android.R.layout.simple_list_item_1, listResult));
 				}else{
-					tripListAdapter = new TripListAdapter(this, parseTrips(listResult));
+					tripListAdapter = new TripListAdapter(this, Trip.parseTrips(listResult));
 					tripslv.setAdapter(tripListAdapter);
 					tripslv.setOnItemClickListener(getListAction());
 				}
@@ -165,20 +165,6 @@ public class TripList extends AppCompatActivity implements MediaListener,
 		}
 	}
 
-	private ArrayList<Trip> parseTrips(List<String> listResult) {
-		ArrayList<Trip> trips = new ArrayList<Trip>();
-		for(String line : listResult){
-			boolean owned = false;
-			if(line.startsWith("*")){
-				owned = true;
-				line = line.substring(1);
-			}
-			String[] tmp = line.split(":", 2);
-			trips.add(new Trip(Integer.parseInt(tmp[0]), owned, tmp[1]));
-		}
-		return trips;
-	}
-
 	private AdapterView.OnItemClickListener getListAction(){
 		return new AdapterView.OnItemClickListener() {
 			@Override
@@ -187,6 +173,7 @@ public class TripList extends AppCompatActivity implements MediaListener,
 				Intent intent = new Intent(TripList.this, TripDetail.class);
 				intent.putExtra("TripId", t.getId());
 				intent.putExtra("TripName", t.toString());
+				intent.putExtra("Owned", t.isOwned());
 				startActivity(intent);
 			}
 		};

@@ -4,7 +4,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="text_drawable_dim">50dp</dimen>
-    <dimen name="fab_margin">12dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
     <dimen name="roundimg_size">88dp</dimen>
     <dimen name="tripdetail_margins">22dp</dimen>
 

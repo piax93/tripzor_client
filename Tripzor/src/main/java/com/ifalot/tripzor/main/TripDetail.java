@@ -3,11 +3,11 @@ package com.ifalot.tripzor.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
@@ -41,8 +41,23 @@ public class TripDetail extends AppCompatActivity implements ResultListener, Vie
         part_list = (ListView) findViewById(R.id.participant_list);
         part_list.setOnTouchListener(this);
 
-        Intent prev = getIntent();
+        final Intent prev = getIntent();
         setTitle(prev.getStringExtra("TripName"));
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.button_add_participant);
+        if(prev.getBooleanExtra("Owned", false)) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(TripDetail.this, SearchParticipants.class);
+                    i.putExtra("TripId", prev.getIntExtra("TripId", -1));
+                    startActivity(i);
+                }
+            });
+        } else {
+            fab.hide();
+        }
+
         HashMap<String, String> postData = new HashMap<String, String>();
         postData.put("action", "TripDetail");
         postData.put("tripid", String.valueOf(prev.getIntExtra("TripId", -1)));
@@ -68,8 +83,7 @@ public class TripDetail extends AppCompatActivity implements ResultListener, Vie
                 JSONArray participants = jo.getJSONArray("participants");
                 String[] v = new String[participants.length()];
                 for(int i = 0; i < v.length; i++) v[i] = participants.getString(i);
-                // part_list.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, v));
-                part_list.setAdapter(new ParticipantsAdapter(this, participants));
+                part_list.setAdapter(new ParticipantsAdapter(this, participants, jo.getInt("owner")));
 
             } catch (JSONException e) { error(); }
         }

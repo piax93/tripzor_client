@@ -1,6 +1,7 @@
 package com.ifalot.tripzor.ui;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +15,12 @@ import org.json.JSONObject;
 public class ParticipantsAdapter extends ArrayAdapter<String> {
 
     private JSONArray participants;
+    private int owner;
 
-    public ParticipantsAdapter(Context context, JSONArray objects) throws JSONException {
+    public ParticipantsAdapter(Context context, JSONArray objects, int owner) throws JSONException {
         super(context, android.R.layout.simple_list_item_1, new String[objects.length()]);
         participants = objects;
+        this.owner = owner;
     }
 
     @Override
@@ -37,6 +40,7 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
                     .append(tmp.getString("surname")).append(" (@")
                     .append(tmp.getString("nickname")).append(')');
             title.setText(sb);
+            if(tmp.getInt("userId") == this.owner) title.setTypeface(null, Typeface.BOLD);
         } catch (JSONException e) {
             e.printStackTrace();
         }

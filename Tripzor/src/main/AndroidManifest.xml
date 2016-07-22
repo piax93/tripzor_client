@@ -16,31 +16,28 @@
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.Light">
-
         <activity
                 android:name=".Loader"
                 android:label="@string/app_name"
                 android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity
                 android:name=".Login"
                 android:label="@string/title_activity_login"
                 android:screenOrientation="portrait"
                 android:windowSoftInputMode="adjustResize|stateVisible">
         </activity>
-
         <activity
                 android:name=".TripList"
                 android:label="@string/title_activity_trip_list"
-                android:theme="@style/ThemeForToolbar"
-                android:screenOrientation="portrait">
+                android:screenOrientation="portrait"
+                android:theme="@style/ThemeForToolbar">
         </activity>
-
         <activity
                 android:name=".Register"
                 android:label="@string/title_activity_register"
@@ -67,9 +64,15 @@
                 android:label="@string/title_activity_trip_detail"
                 android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".EditProfile"
-                  android:label="@string/edit_profile"
-                  android:screenOrientation="portrait" >
+        <activity
+                android:name=".EditProfile"
+                android:label="@string/edit_profile"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".SearchParticipants"
+                android:label="@string/title_activity_search_participants"
+                android:screenOrientation="portrait">
         </activity>
     </application>
 

@@ -31,5 +31,7 @@
     <string name="start_date_tv">Start Date</string>
     <string name="end_date_tv">End Date</string>
     <string name="participants">Participants</string>
+    <string name="title_activity_search_participants">Search Participants</string>
+    <string name="search_user">Search User</string>
 
 </resources>

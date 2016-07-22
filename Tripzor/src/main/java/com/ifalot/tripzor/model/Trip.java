@@ -1,5 +1,8 @@
 package com.ifalot.tripzor.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Trip {
 
     private int id;
@@ -23,6 +26,20 @@ public class Trip {
     @Override
     public String toString(){
         return name;
+    }
+
+    public static ArrayList<Trip> parseTrips(List<String> listResult) {
+        ArrayList<Trip> trips = new ArrayList<Trip>();
+        for(String line : listResult){
+            boolean owned = false;
+            if(line.startsWith("*")){
+                owned = true;
+                line = line.substring(1);
+            }
+            String[] tmp = line.split(":", 2);
+            trips.add(new Trip(Integer.parseInt(tmp[0]), owned, tmp[1]));
+        }
+        return trips;
     }
 
 }
