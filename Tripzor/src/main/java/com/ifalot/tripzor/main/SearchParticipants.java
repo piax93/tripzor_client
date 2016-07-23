@@ -12,12 +12,10 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 import com.ifalot.tripzor.main.R;
 import com.ifalot.tripzor.ui.ParticipantsAdapter;
+import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
@@ -33,7 +31,9 @@ public class SearchParticipants extends AppCompatActivity implements ResultListe
 
     private ListView lv;
     private SwipeRefreshLayout srl;
+    private JSONArray users;
     private int tripId;
+    private boolean adding;
     private static Semaphore mutex;
 
     @Override
@@ -42,7 +42,9 @@ public class SearchParticipants extends AppCompatActivity implements ResultListe
         setContentView(R.layout.activity_search_participants);
 
         mutex = new Semaphore(1);
+        adding = false;
         srl = (SwipeRefreshLayout) findViewById(R.id.search_refresh);
+        srl.setOnRefreshListener(this);
         lv = (ListView) findViewById(R.id.part_search_list);
         EditText search_box = (EditText) findViewById(R.id.search_box);
         tripId = getIntent().getIntExtra("TripId", -1);
@@ -59,28 +61,48 @@ public class SearchParticipants extends AppCompatActivity implements ResultListe
             }
         });
 
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    mutex.acquire();
+                    HashMap<String, String> postData = new HashMap<String, String>();
+                    postData.put("action", "AddParticipant");
+                    postData.put("tripId", String.valueOf(tripId));
+                    postData.put("participant", users.getJSONObject(position).getString("email"));
+                    adding = true;
+                    PostSender.sendPost(postData, SearchParticipants.this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     @Override
     public void onResultsSucceeded(String result, List<String> listResult) {
-        mutex.release();
         srl.setRefreshing(false);
-        lv.setClickable(true);
-
-        if(result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.ERROR)){
-            Log.d("SearchParticipants", "Error retrieving data");
+        if(result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.ERROR) || result.equals(Codes.TRIP_NOT_FOUND)){
+            if(adding) FastDialog.simpleErrorDialog(this, "Error adding participant");
+            else Log.d("SearchParticipants", "Error retrieving data");
         } else {
-            try {
-                JSONArray users = new JSONArray(result);
-                lv.setAdapter(new ParticipantsAdapter(this, users, -1));
-            } catch (JSONException e) {
-                ArrayAdapter<String> aa = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-                aa.add("No users found");
-                lv.setAdapter(aa);
+            if(adding){
+                finish();
+            } else {
+                try {
+                    users = new JSONArray(result);
+                    lv.setAdapter(new ParticipantsAdapter(this, users, -1));
+                } catch (JSONException e) {
+                    ArrayAdapter<String> aa = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+                    aa.add("No users found");
+                    lv.setAdapter(aa);
+                }
             }
         }
+        mutex.release();
+        lv.setClickable(true);
     }
-
 
     @Override
     public void onRefresh() {
@@ -94,7 +116,8 @@ public class SearchParticipants extends AppCompatActivity implements ResultListe
                 if(editable.length() == 0){
                     lv.setAdapter(new ArrayAdapter<String>(SearchParticipants.this, android.R.layout.simple_list_item_1));
                     mutex.release();
-                }else {
+                    srl.setRefreshing(false);
+                } else {
                     HashMap<String, String> postData = new HashMap<String, String>();
                     postData.put("action", "SearchUsers");
                     postData.put("tripId", String.valueOf(tripId));

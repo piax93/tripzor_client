@@ -30,7 +30,6 @@ import com.ifalot.tripzor.web.MediaListener;
 import com.ifalot.tripzor.web.PostSender;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
