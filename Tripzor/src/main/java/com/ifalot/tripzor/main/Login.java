@@ -27,35 +27,35 @@ public class Login extends AppCompatActivity implements ResultListener{
 	private String password;
 	private boolean freshLogin = false;
 	private MaterialDialog progressDialog = null;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		findViewById(R.id.login_form_subcontainer).setVisibility(View.INVISIBLE);
 
-		if(DataManager.isPresent("user")){
+		if (DataManager.isPresent("user")) {
 			progressDialog = FastProgressDialog.buildProgressDialog(this);
 			progressDialog.show();
 			email = DataManager.selectData("user");
 			password = DataManager.selectData("password");
 			login(email, password);
-		}else{
+		} else {
 			findViewById(R.id.login_form_subcontainer).setVisibility(View.VISIBLE);
 			final EditText emailEditText = (EditText) findViewById(R.id.email);
 			final EditText passwordEditText = (EditText) findViewById(R.id.password);
 			Button loginButton = (Button) findViewById(R.id.email_sign_in_button);
 			Button registerButton = (Button) findViewById(R.id.register_button);
 			TextView forgotPassword = (TextView) findViewById(R.id.forgot_password_button);
-			
-			loginButton.setOnClickListener(new OnClickListener() {			
+
+			loginButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					email = emailEditText.getText().toString();
 					password = passwordEditText.getText().toString();
-					if(email.length() == 0 || password.length() == 0){
+					if (email.length() == 0 || password.length() == 0) {
 						FastDialog.simpleDialog(Login.this, "Error", "You left some fields empty", "CLOSE");
-					}else{
+					} else {
 						progressDialog = FastProgressDialog.buildProgressDialog(Login.this);
 						progressDialog.show();
 						freshLogin = true;
@@ -63,7 +63,7 @@ public class Login extends AppCompatActivity implements ResultListener{
 					}
 				}
 			});
-			
+
 			registerButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -73,17 +73,23 @@ public class Login extends AppCompatActivity implements ResultListener{
 					startActivity(intent);
 				}
 			});
-			
+
 			forgotPassword.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					Intent intent = new Intent(getApplicationContext(), PasswordRecovery.class);
 					intent.putExtra("email", emailEditText.getText().toString());
-					startActivity(intent);					
+					startActivity(intent);
 				}
 			});
-			
-		}	
+
+		}
+		findViewById(R.id.forgot_password_button).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(Login.this, Loader.class));
+			}
+		});
 	}
 	
 	protected void login(String email, String password) {
