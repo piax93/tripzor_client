@@ -1,7 +1,9 @@
 package com.ifalot.tripzor.web;
 
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.util.Log;
+import com.ifalot.tripzor.utils.Media;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -81,11 +83,21 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 		sender.execute(postData);
 	}
 
-	public static void getMedia(String file_id, String filename, ResultListener listener){
+	public static void getMedia(String file_id, String filename, MediaListener listener){
 		HashMap<String, String> postData = new HashMap<String, String>();
 		postData.put("action", "GetMedia");
 		postData.put("file", file_id);
 		PostSender sender = new PostSender(false, false, true, filename, listener);
+		sender.execute(postData);
+	}
+
+	public static void getProfilePicture(String userId, String filefolder, MediaListener listener){
+		File folder = new File(filefolder + "/" + Media.PROFILE_PICTURE_DIR);
+		if(!folder.exists()) folder.mkdir();
+		HashMap<String, String> postData = new HashMap<String, String>();
+		postData.put("action", "GetProfilePicture");
+		postData.put("userId", userId);
+		PostSender sender = new PostSender(false, false, true, folder.getAbsolutePath() + "/" + userId, listener);
 		sender.execute(postData);
 	}
 

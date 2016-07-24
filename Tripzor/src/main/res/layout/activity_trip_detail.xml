@@ -27,6 +27,7 @@
                       android:layout_height="wrap_content"
                       android:id="@+id/location_tv"
                       android:gravity="end"
+                      android:textColor="@color/md_material_blue_800"
                       android:textSize="24sp" />
 
         </TableRow>

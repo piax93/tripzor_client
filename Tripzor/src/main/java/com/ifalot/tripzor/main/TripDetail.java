@@ -1,6 +1,7 @@
 package com.ifalot.tripzor.main;
 
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ifalot.tripzor.ui.ParticipantsAdapter;
+import com.ifalot.tripzor.ui.UserDetailDialog;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.utils.FastProgressDialog;
 import com.ifalot.tripzor.utils.SwipeBack;
@@ -103,6 +105,17 @@ public class TripDetail extends AppCompatActivity implements ResultListener, Vie
             fab.hide();
         }
 
+        part_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                try {
+                    UserDetailDialog.showProfile(TripDetail.this, participants.getJSONObject(position));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         refresh();
     }
 
@@ -122,6 +135,7 @@ public class TripDetail extends AppCompatActivity implements ResultListener, Vie
                     TextView end = (TextView) findViewById(R.id.enddate_tv);
                     JSONObject jo = new JSONObject(result); // fields: tripid, name, place, start, end
                     place.setText(jo.getString("place"));
+                    place.setPaintFlags(place.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                     start.setText(jo.getString("start"));
                     end.setText(jo.getString("end"));
 

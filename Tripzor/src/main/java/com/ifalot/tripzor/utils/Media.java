@@ -14,6 +14,8 @@ import java.io.FilenameFilter;
 
 public class Media {
 
+    public final static String PROFILE_PICTURE_DIR = "profilepics";
+
     public static String getImagePath(Context context, final String name, String ext){
         if(ext == null){
             String[] files = context.getFilesDir().list(new FilenameFilter() {
@@ -45,7 +47,7 @@ public class Media {
     }
 
     public static Drawable getRoundedImage(Context context, String filename, @Nullable String ext){
-        String path = getImagePath(context, filename, null);
+        String path = getImagePath(context, filename, ext);
         if(path == null) return null;
         Bitmap bm = BitmapFactory.decodeFile(path);
         int squaresize = Math.min(bm.getWidth(), bm.getHeight());
