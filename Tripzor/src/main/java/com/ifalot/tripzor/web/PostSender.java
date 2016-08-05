@@ -43,6 +43,7 @@ import java.util.Map.Entry;
 public class PostSender extends AsyncTask<HashMap<String, String>, String, String> {
 	
 	public static final String URL_STRING = "http://10.0.2.2:80/tripzor/";
+	// public static final String URL_STRING = "http://192.168.1.3:80/tripzor/";
 	// public static final String URL_STRING = "https://tripzor.azurewebsites.net";
 
 	protected static HttpContext localContext;

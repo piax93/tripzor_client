@@ -77,6 +77,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../Tripzor/src/androidTest/rs" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/blame" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/builds" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/dependency-cache" />
@@ -91,12 +92,16 @@
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/exploded-aar/com.github.vajro/MaterialDesignLibrary/1.6/jars" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/exploded-aar/me.zhanghai.android.materialprogressbar/library/1.1.4/jars" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/incremental" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/incremental-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/incremental-runtime-classes" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/incremental-safeguard" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/incremental-verifier" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/manifests" />
-      <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/pre-dexed" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/res" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/restart-dex" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/symbols" />

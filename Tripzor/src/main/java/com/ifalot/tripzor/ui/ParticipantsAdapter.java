@@ -41,6 +41,7 @@ public class ParticipantsAdapter extends ArrayAdapter<String> {
                     .append(tmp.getString("nickname")).append(')');
             title.setText(sb);
             if(tmp.getInt("userId") == this.owner) title.setTypeface(null, Typeface.BOLD);
+            else title.setTypeface(null, Typeface.NORMAL);
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.ifalot.tripzor.main.EditProfile;
 import com.ifalot.tripzor.main.R;
 import com.ifalot.tripzor.utils.Media;
 import com.ifalot.tripzor.utils.Stuff;
@@ -40,11 +41,14 @@ public class UserDetailDialog implements MediaListener {
         surname.setText(Stuff.ucfirst(user.getString("surname")));
         nickname.setText("@" + user.getString("nickname"));
         udd.builder.customView(main, true);
-        if(new File(Media.getImagePath(context, Media.PROFILE_PICTURE_DIR + "/" + udd.userId, "png")).exists()){
+        if(!EditProfile.newProfilePic && new File(Media.getImagePath(context, Media.PROFILE_PICTURE_DIR + "/" + udd.userId, "png")).exists()){
             ImageView iv = (ImageView) main.findViewById(R.id.profile_picture);
             iv.setImageDrawable(Media.getRoundedImage(iv.getContext(), Media.PROFILE_PICTURE_DIR + "/" + udd.userId, "png"));
             udd.builder.show();
-        } else PostSender.getProfilePicture(udd.userId, context.getFilesDir().getAbsolutePath(), udd);
+        } else {
+            EditProfile.newProfilePic = false;
+            PostSender.getProfilePicture(udd.userId, context.getFilesDir().getAbsolutePath(), udd);
+        }
     }
 
     @Override

@@ -33,6 +33,8 @@ import java.util.List;
 
 public class EditProfile extends AppCompatActivity implements MediaListener {
 
+    public static boolean newProfilePic = false;
+
     final private int PICK_IMAGE = 1;
     private MaterialDialog progressDialog;
     private boolean uploading_image;
@@ -107,6 +109,7 @@ public class EditProfile extends AppCompatActivity implements MediaListener {
             if (result.equals(Codes.DONE)) {
                 if (uploading_image) {
                     uploading_image = false;
+                    newProfilePic = true;
                     ImageView img = (ImageView) findViewById(R.id.profile_picture);
                     img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
                     DataManager.updateValue("update_image", "true");
