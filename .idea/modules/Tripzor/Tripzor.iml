@@ -99,6 +99,7 @@
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/manifests" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/pre-dexed" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/res" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/restart-dex" />
@@ -114,9 +115,10 @@
     <orderEntry type="library" exported="" name="core-0.8.5.6" level="project" />
     <orderEntry type="library" exported="" name="library-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-24.1.1" level="project" />
+    <orderEntry type="library" exported="" name="httpmime-4.3.3" level="project" />
     <orderEntry type="library" exported="" name="support-v4-24.1.1" level="project" />
+    <orderEntry type="library" exported="" name="httpcore-4.3.3" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-24.1.1" level="project" />
-    <orderEntry type="library" exported="" name="httpcore-4.4.4" level="project" />
     <orderEntry type="library" exported="" name="library-0.0.2" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-24.1.1" level="project" />
     <orderEntry type="library" exported="" name="animated-vector-drawable-24.1.1" level="project" />
@@ -125,6 +127,5 @@
     <orderEntry type="library" exported="" name="MaterialDesignLibrary-1.6" level="project" />
     <orderEntry type="library" exported="" name="library-1.1.4" level="project" />
     <orderEntry type="library" exported="" name="httpclient-4.5.1" level="project" />
-    <orderEntry type="library" exported="" name="httpmime-4.3" level="project" />
   </component>
 </module>

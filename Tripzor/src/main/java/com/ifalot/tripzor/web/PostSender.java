@@ -19,6 +19,7 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -138,7 +139,7 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 					meb.addTextBody(entry.getKey(), entry.getValue());
 				}
 				File image = new File(this.image_file);
-				meb.addBinaryBody(image.getName().split("\\.")[0], image, ContentType.create("image/jpg"), image.getName());
+				meb.addBinaryBody(image.getName().split("\\.")[0], image, ContentType.create("image/png"), image.getName());
 				post.setEntity(meb.build());
 			} else {
 				List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
