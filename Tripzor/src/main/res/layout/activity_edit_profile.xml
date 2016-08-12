@@ -22,6 +22,7 @@
             <ImageView android:layout_width="150dp"
                        android:layout_height="150dp"
                        android:id="@+id/profile_picture"
+                       android:contentDescription="@string/graphics"
                        android:background="@drawable/round_border" />
 
             <ImageView android:layout_width="60dp"
@@ -29,6 +30,7 @@
                        android:layout_marginTop="91dp"
                        android:layout_marginLeft="87dp"
                        android:layout_marginStart="87dp"
+                       android:contentDescription="@string/new_button"
                        android:src="@drawable/ic_action_new" />
 
         </RelativeLayout>

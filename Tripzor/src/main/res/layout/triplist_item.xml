@@ -9,6 +9,7 @@
     <ImageView
             android:layout_width="@dimen/text_drawable_dim"
             android:layout_height="@dimen/text_drawable_dim"
+            android:contentDescription="@string/graphics"
             android:id="@+id/trip_item_icon" />
 
     <TextView

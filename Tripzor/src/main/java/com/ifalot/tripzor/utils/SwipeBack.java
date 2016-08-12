@@ -3,11 +3,7 @@ package com.ifalot.tripzor.utils;
 import android.app.Activity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import com.ifalot.tripzor.main.R;
 
-/**
- * Created by mat on 3/22/16.
- */
 public class SwipeBack implements GestureDetector.OnGestureListener {
 
     protected static final int SWIPE_THRESHOLD = 100;

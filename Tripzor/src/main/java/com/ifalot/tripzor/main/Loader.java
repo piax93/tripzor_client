@@ -11,7 +11,6 @@ import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
-import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 import java.util.List;
 

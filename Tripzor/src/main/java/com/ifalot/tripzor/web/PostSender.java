@@ -1,7 +1,6 @@
 package com.ifalot.tripzor.web;
 
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.util.Log;
 import com.ifalot.tripzor.utils.Media;
 import org.apache.http.HttpResponse;
@@ -19,11 +18,9 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.message.BasicHeaderValueFormatter;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;

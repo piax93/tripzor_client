@@ -17,7 +17,7 @@
     <string name="start_date">Start Date (yyyy-mm-dd)</string>
     <string name="end_date">End Date (yyyy-mm-dd)</string>
     <string name="create_trip">CREATE TRIP</string>
-    <string name="loading">LOADING...</string>
+    <string name="loading">LOADING…</string>
     <string name="closeDrawer">closeDrawer</string>
     <string name="openDrawer">openDrawer</string>
     <string name="info">Info</string>
@@ -33,5 +33,7 @@
     <string name="participants">Participants</string>
     <string name="title_activity_search_participants">Search Participants</string>
     <string name="search_user">Search User</string>
+    <string name="graphics">Graphics</string>
+    <string name="new_button">New Button</string>
 
 </resources>

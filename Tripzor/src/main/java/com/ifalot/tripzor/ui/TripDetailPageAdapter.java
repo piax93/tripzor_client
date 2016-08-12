@@ -22,8 +22,7 @@ public class TripDetailPageAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int index) {
         if(index == 1){
-            TripDetailCostFragment f = new TripDetailCostFragment();
-            return f;
+            return new TripDetailCostFragment();
         }else {
             TripDetailParticipantFragment f = new TripDetailParticipantFragment();
             f.setOwned(owned);

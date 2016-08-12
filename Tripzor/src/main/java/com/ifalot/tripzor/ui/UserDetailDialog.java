@@ -1,8 +1,10 @@
 package com.ifalot.tripzor.ui;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -31,16 +33,17 @@ public class UserDetailDialog implements MediaListener {
         this.userId = userId;
     }
 
-    public static void showProfile(Context context, JSONObject user) throws JSONException {
+    public static void showProfile(Context context, JSONObject user, @Nullable ViewGroup parentView) throws JSONException {
         UserDetailDialog udd = new UserDetailDialog(context, user.getString("userId"));
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View main = inflater.inflate(R.layout.user_profile_dialog, null);
+        View main = inflater.inflate(R.layout.user_profile_dialog, parentView);
         TextView name = (TextView) main.findViewById(R.id.profile_name_tv);
         TextView surname = (TextView) main.findViewById(R.id.profile_surname_tv);
         TextView nickname = (TextView) main.findViewById(R.id.profile_nickname_tv);
         name.setText(Stuff.ucfirst(user.getString("name")));
         surname.setText(Stuff.ucfirst(user.getString("surname")));
-        nickname.setText("@" + user.getString("nickname"));
+        nickname.setText("@");
+        nickname.append(user.getString("nickname"));
         udd.builder.customView(main, true);
 
         if(new File(Media.getImagePath(context, Media.PROFILE_PICTURE_DIR + "/" + udd.userId, "png")).exists()){

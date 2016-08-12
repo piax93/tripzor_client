@@ -105,7 +105,7 @@ public class TripDetailParticipantFragment extends Fragment implements ResultLis
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 try {
                     UserDetailDialog.showProfile(TripDetailParticipantFragment.this.getContext(),
-                            participants.getJSONObject(position));
+                            participants.getJSONObject(position), null);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

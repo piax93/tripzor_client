@@ -23,9 +23,7 @@ import com.ifalot.tripzor.utils.Media;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.MediaListener;
 import com.ifalot.tripzor.web.PostSender;
-import com.ifalot.tripzor.web.ResultListener;
 
-import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.util.HashMap;
