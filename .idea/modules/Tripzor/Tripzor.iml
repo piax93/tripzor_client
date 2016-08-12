@@ -99,7 +99,6 @@
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/manifests" />
-      <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/pre-dexed" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/res" />
       <excludeFolder url="file://$MODULE_DIR$/../../../Tripzor/build/intermediates/restart-dex" />

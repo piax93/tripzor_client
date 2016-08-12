@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 @SuppressWarnings("ConstantConditions")
@@ -41,10 +42,12 @@ public class UserDetailDialog implements MediaListener {
         surname.setText(Stuff.ucfirst(user.getString("surname")));
         nickname.setText("@" + user.getString("nickname"));
         udd.builder.customView(main, true);
-        if(!EditProfile.newProfilePic && new File(Media.getImagePath(context, Media.PROFILE_PICTURE_DIR + "/" + udd.userId, "png")).exists()){
-            ImageView iv = (ImageView) main.findViewById(R.id.profile_picture);
-            iv.setImageDrawable(Media.getRoundedImage(iv.getContext(), Media.PROFILE_PICTURE_DIR + "/" + udd.userId, "png"));
-            udd.builder.show();
+
+        if(new File(Media.getImagePath(context, Media.PROFILE_PICTURE_DIR + "/" + udd.userId, "png")).exists()){
+            HashMap<String, String> postData = new HashMap<String, String>();
+            postData.put("action", "GetProfilePictureTime");
+            postData.put("userId", udd.userId);
+            PostSender.sendPost(postData, udd);
         } else {
             EditProfile.newProfilePic = false;
             PostSender.getProfilePicture(udd.userId, context.getFilesDir().getAbsolutePath(), udd);
@@ -63,7 +66,15 @@ public class UserDetailDialog implements MediaListener {
 
     @Override
     public void onResultsSucceeded(String result, List<String> listResult) {
-
+        if(!result.equals(Codes.ERROR) && !result.equals(Codes.USER_NOT_FOUND)){
+            File f = new File(Media.getImagePath(builder.getContext(), Media.PROFILE_PICTURE_DIR + "/" + userId, "png"));
+            if(Long.parseLong(result)*1000 > f.lastModified()){
+                PostSender.getProfilePicture(userId, builder.getContext().getFilesDir().getAbsolutePath(), this);
+                return;
+            }
+        }
+        ImageView iv = (ImageView) builder.show().findViewById(R.id.profile_picture);
+        iv.setImageDrawable(Media.getRoundedImage(iv.getContext(), Media.PROFILE_PICTURE_DIR + "/" + userId, "png"));
     }
 
 }

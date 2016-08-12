@@ -82,13 +82,8 @@ public class EditProfile extends AppCompatActivity implements MediaListener {
         HashMap<String, String> data = new HashMap<String, String>();
         data.put("action", "UserInfo");
         PostSender.sendPostML(data, this);
+        PostSender.getMedia("profile", Media.getFilePath(this, "profile"), this);
         progressDialog.show();
-
-        String profile_image = Media.getImagePath(this, "profile", "png");
-        if (profile_image != null && new File(profile_image).exists()) {
-            ImageView img = (ImageView) findViewById(R.id.profile_picture);
-            img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
-        } else PostSender.getMedia("profile", Media.getFilePath(this, "profile"), this);
 
     }
 
