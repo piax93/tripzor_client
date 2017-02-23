@@ -23,6 +23,9 @@ import com.ifalot.tripzor.utils.Media;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.MediaListener;
 import com.ifalot.tripzor.web.PostSender;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
@@ -79,7 +82,7 @@ public class EditProfile extends AppCompatActivity implements MediaListener {
 
         HashMap<String, String> data = new HashMap<String, String>();
         data.put("action", "UserInfo");
-        PostSender.sendPostML(data, this);
+        PostSender.sendPost(data, this);
         PostSender.getMedia("profile", Media.getFilePath(this, "profile"), this);
         progressDialog.show();
 
@@ -87,9 +90,9 @@ public class EditProfile extends AppCompatActivity implements MediaListener {
 
 
     @Override
-    public void onResultsSucceeded(String result, List<String> listResult) {
+    public void onResultsSucceeded(JSONObject res) throws JSONException {
         progressDialog.dismiss();
-
+        String result = res.getString("result");
         if (result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.ERROR)) {
             String verb = result.equals(Codes.ERROR) ? "updating" : "retrieving";
             FastDialog.simpleErrorDialog(this, "Error " + verb + " info", new MaterialDialog.SingleButtonCallback() {
@@ -109,23 +112,24 @@ public class EditProfile extends AppCompatActivity implements MediaListener {
                 }
                 else finish();
             } else {
-                if (listResult != null && listResult.size() >= 4) {
+                JSONArray listResult = res.getJSONArray("data");
+                if (listResult.length() >= 4) {
                     EditText nick = (EditText) findViewById(R.id.nickname);
                     EditText name = (EditText) findViewById(R.id.name);
                     EditText surname = (EditText) findViewById(R.id.surname);
                     EditText phone = (EditText) findViewById(R.id.phone_number);
-                    nick.setText(listResult.get(0));
-                    name.setText(listResult.get(1));
-                    surname.setText(listResult.get(2));
-                    phone.setText(listResult.get(3));
+                    nick.setText(listResult.getString(0));
+                    name.setText(listResult.getString(1));
+                    surname.setText(listResult.getString(2));
+                    phone.setText(listResult.getString(3));
                 }
             }
         }
     }
 
     @Override
-    public void onMediaReceived(String result) {
-        if(result.equals(Codes.DONE)) {
+    public void onMediaReceived(JSONObject result) throws JSONException {
+        if(result.getString("result").equals(Codes.DONE)) {
             ImageView img = (ImageView) findViewById(R.id.profile_picture);
             img.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
         }

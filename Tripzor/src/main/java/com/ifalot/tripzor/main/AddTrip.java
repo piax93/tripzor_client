@@ -17,6 +17,8 @@ import com.ifalot.tripzor.utils.FastProgressDialog;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -123,9 +125,9 @@ public class AddTrip extends AppCompatActivity implements ResultListener, DatePi
     }
 
     @Override
-    public void onResultsSucceeded(String result, List<String> listResult) {
+    public void onResultsSucceeded(JSONObject result) throws JSONException {
         progressDialog.dismiss();
-        if(result.equals(Codes.DONE)){
+        if(result.get("result").equals(Codes.DONE)){
             DataManager.insertData("new_trip", "true");
             finish();
         }else{

@@ -1,7 +1,8 @@
 package com.ifalot.tripzor.web;
 
-import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public interface ResultListener {
-	void onResultsSucceeded(String result, List<String> listResult);
+	void onResultsSucceeded(JSONObject result) throws JSONException;
 }

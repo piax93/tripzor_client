@@ -17,6 +17,8 @@ import com.ifalot.tripzor.utils.FastProgressDialog;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -101,7 +103,8 @@ public class Login extends AppCompatActivity implements ResultListener{
 	}
 	
 	@Override
-	public void onResultsSucceeded(String result, List<String> listResult) {
+	public void onResultsSucceeded(JSONObject res) throws JSONException {
+		String result = res.getString("result");
 		if(result.equals(Codes.DONE)){
 			if(freshLogin){
 				DataManager.insertData("user", email);

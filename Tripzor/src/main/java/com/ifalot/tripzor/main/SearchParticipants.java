@@ -7,8 +7,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
-import com.ifalot.tripzor.main.R;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
 import com.ifalot.tripzor.ui.ParticipantsAdapter;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.Codes;
@@ -16,9 +18,9 @@ import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -76,8 +78,9 @@ public class SearchParticipants extends AppCompatActivity implements ResultListe
     }
 
     @Override
-    public void onResultsSucceeded(String result, List<String> listResult) {
+    public void onResultsSucceeded(JSONObject res) throws JSONException {
         srl.setRefreshing(false);
+        String result = res.getString("result");
         if(result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.ERROR) || result.equals(Codes.TRIP_NOT_FOUND)){
             if(adding) FastDialog.simpleErrorDialog(this, "Error adding participant");
             else Log.d("SearchParticipants", "Error retrieving data");
@@ -85,10 +88,9 @@ public class SearchParticipants extends AppCompatActivity implements ResultListe
             if(adding){
                 finish();
             } else {
-                try {
-                    users = new JSONArray(result);
-                    lv.setAdapter(new ParticipantsAdapter(this, users, -1));
-                } catch (JSONException e) {
+                users = res.getJSONArray("data");
+                if(users.length() > 0) lv.setAdapter(new ParticipantsAdapter(this, users, -1));
+                else {
                     ArrayAdapter<String> aa = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
                     aa.add("No users found");
                     lv.setAdapter(aa);

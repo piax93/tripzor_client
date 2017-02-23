@@ -28,6 +28,9 @@ import com.ifalot.tripzor.utils.Media;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.MediaListener;
 import com.ifalot.tripzor.web.PostSender;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.HashMap;
@@ -54,7 +57,7 @@ public class TripList extends AppCompatActivity implements MediaListener,
 		Toolbar toolbar = (Toolbar) findViewById(R.id.trip_list_toolbar);
 		setSupportActionBar(toolbar);
 		try { getSupportActionBar().setElevation(18.0f); }
-		catch (NullPointerException e) { }
+		catch (NullPointerException e) { e.printStackTrace(); }
 
 		deleting = false;
 		navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -113,8 +116,9 @@ public class TripList extends AppCompatActivity implements MediaListener,
 	}
 
 	@Override
-	public void onResultsSucceeded(String result, List<String> listResult) {
+	public void onResultsSucceeded(JSONObject res) throws JSONException {
 		swipeRefreshLayout.setRefreshing(false);
+		String result = res.getString("result");
 		if(result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.ERROR)){
 			FastDialog.simpleDialog(this, "ERROR", "An error occurred...",
 					"CLOSE", new MaterialDialog.SingleButtonCallback() {
@@ -124,32 +128,20 @@ public class TripList extends AppCompatActivity implements MediaListener,
 							System.exit(RESULT_CANCELED);
 						}
 					});
-		}else{
+		} else {
 			if(deleting){
 				deleting = false;
-				String res = listResult.get(listResult.size()-1);
-				if(res.equals(Codes.DONE)){
-					// Now server removes the user from partecipants
-//					if (result.startsWith("_")) {
-//						StringBuffer sb = new StringBuffer();
-//						for (int i = 0; i < listResult.size() - 1; i++) {
-//							sb.append("- ").append(listResult.get(i).substring(6)).append("\n");
-//						}
-//						FastDialog.simpleDialog(this, "Warning", "The following trips cannot be deleted " +
-//								"because you are not the creator:\n " + sb.toString(), "CLOSE");
-//					}
-				}else if (res.equals(Codes.ERROR)){
-					FastDialog.simpleErrorDialog(this, "Database error occurred :(");
-				}
 				this.onRefresh();
-			}else{
+			} else {
 				tripslv = (ListView) findViewById(R.id.trip_list);
-				if(listResult.size() == 0) {
-					listResult.add("No trips linked to your account");
-					tripslv.setAdapter(new ArrayAdapter<String>(this,
-							android.R.layout.simple_list_item_1, listResult));
+				JSONArray mytrips = res.getJSONArray("data").getJSONArray(0);
+				JSONArray parttrips = res.getJSONArray("data").getJSONArray(1);
+				if(mytrips.length() + parttrips.length() == 0) {
+					ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+					adapt.add("No trips linked to your account");
+					tripslv.setAdapter(adapt);
 				}else{
-					tripListAdapter = new TripListAdapter(this, Trip.parseTrips(listResult));
+					tripListAdapter = new TripListAdapter(this, Trip.parseTrips(mytrips, parttrips));
 					tripslv.setAdapter(tripListAdapter);
 					tripslv.setOnItemClickListener(getListAction());
 				}
@@ -158,8 +150,8 @@ public class TripList extends AppCompatActivity implements MediaListener,
 	}
 
 	@Override
-	public void onMediaReceived(String result) {
-		if(result.equals(Codes.DONE)) {
+	public void onMediaReceived(JSONObject res) throws JSONException {
+		if(res.getString("result").equals(Codes.DONE)) {
 			navHeaderFg.setImageDrawable(Media.getRoundedImage(this, "profile", "png"));
 		}
 	}
@@ -179,7 +171,7 @@ public class TripList extends AppCompatActivity implements MediaListener,
 	}
 
 	@Override
-	public boolean onNavigationItemSelected(MenuItem item) {
+	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 		item.setChecked(true);
 		lastItemChecked = item.getItemId();
 		int id = item.getItemId();
@@ -276,7 +268,7 @@ public class TripList extends AppCompatActivity implements MediaListener,
 						sb.deleteCharAt(sb.length()-1);
 						postData.put("ids", sb.toString());
 						deleting = true;
-						PostSender.sendPostML(postData, TripList.this);
+						PostSender.sendPost(postData, TripList.this);
 					}
 				}, new MaterialDialog.SingleButtonCallback() {
 					@Override
@@ -292,6 +284,6 @@ public class TripList extends AppCompatActivity implements MediaListener,
 		swipeRefreshLayout.setRefreshing(true);
 		HashMap<String, String> data = new HashMap<String, String>();
 		data.put("action", "ListTrips");
-		PostSender.sendPostML(data, this);
+		PostSender.sendPost(data, this);
 	}
 }

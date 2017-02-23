@@ -15,9 +15,10 @@ import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class PasswordRecovery extends AppCompatActivity implements ResultListener{
 
@@ -47,8 +48,9 @@ public class PasswordRecovery extends AppCompatActivity implements ResultListene
 	}
 
 	@Override
-	public void onResultsSucceeded(String result, List<String> listResult) {
+	public void onResultsSucceeded(JSONObject res) throws JSONException {
 		dialog.dismiss();
+		String result = res.getString("result");
 		if(result.equals(Codes.ERROR) || result.equals(Codes.USER_NOT_FOUND)){
 			FastDialog.simpleDialog(this, "Error", "Something really strange happened, try again later", "CLOSE");
 		}else if (result.equals(Codes.MAIL_NOT_SENT)){

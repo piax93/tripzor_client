@@ -17,13 +17,14 @@ import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class Register extends AppCompatActivity implements ResultListener {
 
-	protected HashMap<String, String> form = new HashMap<String, String>();
+	private HashMap<String, String> form = new HashMap<String, String>();
 	protected ProgressDialog dialog;
 	
 	@Override
@@ -50,7 +51,7 @@ public class Register extends AppCompatActivity implements ResultListener {
 		
 	}
 	
-	protected void register(){
+	private void register(){
 		if(form.get("email").length() == 0 || form.get("password").length() == 0){
 			FastDialog.simpleDialog(this, "Error", "Email and password are required!", "CLOSE");
 		}else{
@@ -66,8 +67,9 @@ public class Register extends AppCompatActivity implements ResultListener {
 	}
 
 	@Override
-	public void onResultsSucceeded(String result, List<String> listResult) {
+	public void onResultsSucceeded(JSONObject res) throws JSONException {
 		dialog.dismiss();
+		String result = res.getString("result");
 		if(result.equals(Codes.DONE)){
 			DataManager.insertData("user", form.get("email"));
 			DataManager.insertData("password", form.get("password"));

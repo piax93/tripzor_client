@@ -11,6 +11,8 @@ import com.ifalot.tripzor.utils.DataManager;
 import com.ifalot.tripzor.utils.FastDialog;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -28,12 +30,12 @@ public class Loader extends AppCompatActivity implements ResultListener {
 	}
 
 	@Override
-	public void onResultsSucceeded(String result, List<String> listResult) {
-		if(result.equals("SERVER UP AND RUNNING")){
+	public void onResultsSucceeded(JSONObject result) throws JSONException {
+		if(result.get("result").equals("SERVER UP AND RUNNING")) {
 			Intent intent = new Intent(this, Login.class);
 			startActivity(intent);
 			finish();
-		}else{
+		} else {
 			FastDialog.simpleDialog(this, "Oops", "Server not available at the moment :-(\nTry again later", "CLOSE",
 					new MaterialDialog.SingleButtonCallback() {
 						@Override
@@ -43,7 +45,6 @@ public class Loader extends AppCompatActivity implements ResultListener {
 							System.exit(RESULT_CANCELED);
 						}
 					});
-		}		
+		}
 	}
-
 }

@@ -58,8 +58,8 @@ public class UserDetailDialog implements MediaListener {
     }
 
     @Override
-    public void onMediaReceived(String result) {
-        if(result.equals(Codes.DONE)){
+    public void onMediaReceived(JSONObject result) throws JSONException {
+        if(result.getString("result").equals(Codes.DONE)){
             ImageView iv = (ImageView) builder.show().getView().findViewById(R.id.profile_picture);
             iv.setImageDrawable(Media.getRoundedImage(iv.getContext(), Media.PROFILE_PICTURE_DIR + "/" + userId, "png"));
         }else{
@@ -68,10 +68,11 @@ public class UserDetailDialog implements MediaListener {
     }
 
     @Override
-    public void onResultsSucceeded(String result, List<String> listResult) {
+    public void onResultsSucceeded(JSONObject res) throws JSONException {
+        String result = res.getString("result");
         if(!result.equals(Codes.ERROR) && !result.equals(Codes.USER_NOT_FOUND)){
             File f = new File(Media.getImagePath(builder.getContext(), Media.PROFILE_PICTURE_DIR + "/" + userId, "png"));
-            if(Long.parseLong(result)*1000 > f.lastModified()){
+            if(res.getLong("data") * 1000 > f.lastModified()){
                 PostSender.getProfilePicture(userId, builder.getContext().getFilesDir().getAbsolutePath(), this);
                 return;
             }

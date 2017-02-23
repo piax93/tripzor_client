@@ -28,6 +28,8 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.security.KeyStore;
@@ -39,30 +41,28 @@ import java.util.Map.Entry;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class PostSender extends AsyncTask<HashMap<String, String>, String, String> {
-	
-	public static final String URL_STRING = "http://10.0.2.2:80/tripzor/";
+
+	private static final String JSON_RESULT_FORMAT = "{\"result\":\"%s\"}";
+	private static final String URL_STRING = "http://10.0.2.2:80/tripzor/";
 	// public static final String URL_STRING = "http://192.168.1.3:80/tripzor/";
 	// public static final String URL_STRING = "https://tripzor.azurewebsites.net";
 
-	protected static HttpContext localContext;
-	protected static CookieStore cookieStore;
+	private static HttpContext localContext;
+	private static CookieStore cookieStore;
 	
-	private boolean multipleLines;
 	private boolean getimage;
 	private boolean putimage;
 	private String image_file;
 	private ResultListener listener;
 	
-	protected PostSender(boolean multipleLines, ResultListener listener){
+	protected PostSender(ResultListener listener){
 		this.listener = listener;
-		this.multipleLines = multipleLines;
 	}
 
-	protected  PostSender(boolean multipleLines, boolean putimage, boolean getimage, String image_file, ResultListener listener){
+	protected PostSender(boolean putimage, boolean getimage, String image_file, ResultListener listener){
 		this.getimage = getimage;
 		this.putimage = putimage;
 		this.image_file = image_file;
-		this.multipleLines = multipleLines;
 		this.listener = listener;
 	}
 	
@@ -73,20 +73,15 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 	}
 	
 	public static void sendPost(HashMap<String, String> postData, ResultListener listener){
-		PostSender sender = new PostSender(false, listener);
+		PostSender sender = new PostSender(listener);
 		sender.execute(postData);
 	}
 	
-	public static void sendPostML(HashMap<String, String> postData, ResultListener listener){
-		PostSender sender = new PostSender(true, listener);
-		sender.execute(postData);
-	}
-
 	public static void getMedia(String file_id, String filename, MediaListener listener){
 		HashMap<String, String> postData = new HashMap<String, String>();
 		postData.put("action", "GetMedia");
 		postData.put("file", file_id);
-		PostSender sender = new PostSender(false, false, true, filename, listener);
+		PostSender sender = new PostSender(false, true, filename, listener);
 		sender.execute(postData);
 	}
 
@@ -96,30 +91,22 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 		HashMap<String, String> postData = new HashMap<String, String>();
 		postData.put("action", "GetProfilePicture");
 		postData.put("userId", userId);
-		PostSender sender = new PostSender(false, false, true, folder.getAbsolutePath() + "/" + userId, listener);
+		PostSender sender = new PostSender(false, true, folder.getAbsolutePath() + "/" + userId, listener);
 		sender.execute(postData);
 	}
 
 	public static void putMedia(HashMap<String, String> postData, String filename, ResultListener listener){
-		PostSender sender = new PostSender(false, true, false, filename, listener);
+		PostSender sender = new PostSender(true, false, filename, listener);
 		sender.execute(postData);
 	}
 	
 	@Override
 	protected void onPostExecute(String result) {
-		if(this.getimage){
-			((MediaListener)this.listener).onMediaReceived(result);
-		} else {
-			if (this.multipleLines) {
-				String[] tmpArr = result.split("\n");
-				List<String> listResult = new ArrayList<String>();
-				for (String aTmpArr : tmpArr) {
-					if (aTmpArr.length() != 0) listResult.add(aTmpArr);
-				}
-				listener.onResultsSucceeded(result, listResult);
-			} else {
-				listener.onResultsSucceeded(result, null);
-			}
+		try {
+			if (this.getimage) ((MediaListener) this.listener).onMediaReceived(new JSONObject(result));
+			else listener.onResultsSucceeded(new JSONObject(result));
+		} catch(JSONException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -153,21 +140,18 @@ public class PostSender extends AsyncTask<HashMap<String, String>, String, Strin
 				FileOutputStream fos = new FileOutputStream(this.image_file);
 				response.getEntity().writeTo(fos);
 				fos.close();
-				return Codes.DONE;
+				return String.format(JSON_RESULT_FORMAT, Codes.DONE);
 			} else {
 				BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 				StringBuilder resultstr = new StringBuilder();
 				String line;
-				while ((line = rd.readLine()) != null) {
-					resultstr.append(line);
-					if (this.multipleLines) resultstr.append('\n');
-				}
+				while ((line = rd.readLine()) != null) resultstr.append(line).append('\n');
 				return resultstr.toString().trim();
 			}
 
 		} catch (IOException e) {
-			Log.d("ciao", e.getMessage());
-			return Codes.ERROR;
+			Log.d("postsender", e.getMessage());
+			return String.format(JSON_RESULT_FORMAT, Codes.ERROR);
 		} 
 		
 	}

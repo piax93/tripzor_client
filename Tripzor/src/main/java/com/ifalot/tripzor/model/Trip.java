@@ -1,5 +1,9 @@
 package com.ifalot.tripzor.model;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,16 +32,16 @@ public class Trip {
         return name;
     }
 
-    public static ArrayList<Trip> parseTrips(List<String> listResult) {
+    public static ArrayList<Trip> parseTrips(JSONArray mytrips, JSONArray parttrips) throws JSONException {
         ArrayList<Trip> trips = new ArrayList<Trip>();
-        for(String line : listResult){
-            boolean owned = false;
-            if(line.startsWith("*")){
-                owned = true;
-                line = line.substring(1);
-            }
-            String[] tmp = line.split(":", 2);
-            trips.add(new Trip(Integer.parseInt(tmp[0]), owned, tmp[1]));
+        JSONObject tmp;
+        for(int i = 0; i < mytrips.length(); i++) {
+            tmp = mytrips.getJSONObject(i);
+            trips.add(new Trip(tmp.getInt("tripId"), true, tmp.getString("name")));
+        }
+        for(int i = 0; i < parttrips.length(); i++) {
+            tmp = parttrips.getJSONObject(i);
+            trips.add(new Trip(tmp.getInt("tripId"), false, tmp.getString("name")));
         }
         return trips;
     }

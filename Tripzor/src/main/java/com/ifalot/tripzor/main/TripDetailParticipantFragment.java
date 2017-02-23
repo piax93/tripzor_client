@@ -117,34 +117,30 @@ public class TripDetailParticipantFragment extends Fragment implements ResultLis
     }
 
     @Override
-    public void onResultsSucceeded(String result, List<String> listResult) {
+    public void onResultsSucceeded(JSONObject res) throws JSONException {
         progressDialog.dismiss();
+        String result = res.getString("result");
         if(result.equals(Codes.USER_NOT_FOUND) || result.equals(Codes.TRIP_NOT_FOUND)){
             error();
         } else {
             if(removing){
                 removing = false;
                 refresh();
-            }else {
-                try {
-                    TextView place = (TextView) rootView.findViewById(R.id.location_tv);
-                    TextView start = (TextView) rootView.findViewById(R.id.startdate_tv);
-                    TextView end = (TextView) rootView.findViewById(R.id.enddate_tv);
-                    JSONObject jo = new JSONObject(result); // fields: tripid, name, place, start, end
-                    place.setText(jo.getString("place"));
-                    place.setPaintFlags(place.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-                    start.setText(jo.getString("start"));
-                    end.setText(jo.getString("end"));
+            } else {
+                TextView place = (TextView) rootView.findViewById(R.id.location_tv);
+                TextView start = (TextView) rootView.findViewById(R.id.startdate_tv);
+                TextView end = (TextView) rootView.findViewById(R.id.enddate_tv);
+                JSONObject jo = res.getJSONObject("data"); // fields: tripid, name, place, start, end
+                place.setText(jo.getString("place"));
+                place.setPaintFlags(place.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                start.setText(jo.getString("start"));
+                end.setText(jo.getString("end"));
 
-                    participants = jo.getJSONArray("participants");
-                    owner = jo.getInt("owner");
-                    String[] v = new String[participants.length()];
-                    for (int i = 0; i < v.length; i++) v[i] = participants.getString(i);
-                    part_list.setAdapter(new ParticipantsAdapter(this.getContext(), participants, owner));
-
-                } catch (JSONException e) {
-                    error();
-                }
+                participants = jo.getJSONArray("participants");
+                owner = jo.getInt("owner");
+                String[] v = new String[participants.length()];
+                for (int i = 0; i < v.length; i++) v[i] = participants.getString(i);
+                part_list.setAdapter(new ParticipantsAdapter(this.getContext(), participants, owner));
             }
         }
     }

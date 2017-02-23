@@ -15,14 +15,15 @@ import com.ifalot.tripzor.utils.FastProgressDialog;
 import com.ifalot.tripzor.web.Codes;
 import com.ifalot.tripzor.web.PostSender;
 import com.ifalot.tripzor.web.ResultListener;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class PasswordChange extends AppCompatActivity implements ResultListener{
 
-	protected MaterialDialog progressDialog;
-	protected String password;
+	private MaterialDialog progressDialog;
+	private String password;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +59,9 @@ public class PasswordChange extends AppCompatActivity implements ResultListener{
 	}
 
 	@Override
-	public void onResultsSucceeded(String result, List<String> listResult) {
+	public void onResultsSucceeded(JSONObject res) throws JSONException {
 		progressDialog.dismiss();
+		String result = res.getString("result");
 		if(result.equals(Codes.USER_NOT_FOUND)){
 			FastDialog.simpleErrorDialog(this, "Server Error");
 		}else if(result.equals(Codes.ERROR)){
